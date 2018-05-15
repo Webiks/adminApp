@@ -5,7 +5,10 @@
   "dependencies": {
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
-    "react-scripts-ts": "2.16.0"
+    "react-redux": "^5.0.7",
+    "react-router": "^4.2.0",
+    "react-scripts-ts": "2.16.0",
+    "redux": "^4.0.0"
   },
   "scripts": {
     "start": "react-scripts-ts start",
@@ -14,6 +17,7 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
+    "@types/react-redux": "^6.0.0",
     "@types/jest": "^22.2.3",
     "@types/node": "^10.0.8",
     "@types/react": "^16.3.14",
