@@ -22,12 +22,9 @@ cache:
   directories:
      - "./node_modules"
 
-before_deploy:
-  - "npm run build:gh-pages"
-
 deploy:
-  provider: pages
-  skip_cleanup: true
+  provider: script
+  script: npm run deploy
   github_token: $GITHUB_TOKEN
   on:
     branch: master
