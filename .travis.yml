@@ -24,8 +24,7 @@ cache:
 
 deploy:
   provider: script
-  script: npm run deploy
-  github_token: $GITHUB_TOKEN
+  script: "npm run deploy"
   on:
     branch: master
 
