@@ -1,0 +1,2 @@
+export const LAYER_RASTER = 'LAYER_RASTER';
+export const LAYER_VECTOR = 'LAYER_VECTOR';
