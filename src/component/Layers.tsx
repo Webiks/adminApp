@@ -1,23 +1,20 @@
 import * as React from 'react';
-//import PropTypes from 'prop-types-ts';
 import { connect } from 'react-redux';
-import Layer from '../models/Layer';
-import { toggleFavorite } from '../actions/layers';
+import LayerComponent from './LayerComponent';
+import { IWorldLayer } from "../models/modelInterfaces";
 
-const Layers = ({ layers: Layer[] , toggle }) => (
+export interface ILayersProps {
+    layers: IWorldLayer[];
+}
+
+const Layers = ({ layers }: ILayersProps ) => (
     <ul>
-        { layers.map(layer => <Layer key={ layer.id } recipe={ layer } toggle={ toggle } />) }
-</ul>
+        { layers.map(layer => <LayerComponent key={ layer.id } layer={ layer } />) }
+    </ul>
 );
 
-/*
-Layers.propTypes = {
-    layers: PropTypes.array.isRequired,
-    toggle: PropTypes.func.isRequired
-};*/
-
-const mapStateToProps = (state) => ({
-    recipes: state.recipes
+const mapStateToProps = (state: any) => ({
+    layers: state.layers
 });
 
-export default connect(mapStateToProps, { toggle: toggleFavorite })(Layers);
+export default connect(mapStateToProps)(Layers);

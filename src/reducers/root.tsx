@@ -1,6 +1,7 @@
-//import { getID } from '../lib/utils';
-import * as actions from '../consts/action-types';
+// import { getID } from '../lib/utils';
+// import * as actions from '../consts/action-types';
 
+/*
 const reducer = (state, action) => {
   console.log('Got Action ' + action.type, action);
 
@@ -17,7 +18,7 @@ const reducer = (state, action) => {
       const newRasters = state.layers.concat(newRaster);
 
       return Object.assign({}, state, {
-        recipes: newRecipes
+        rasters: newRaster
       });
 
     case actions.TOGGLE_FAVORITE:
@@ -31,4 +32,4 @@ const reducer = (state, action) => {
   }
 };
 
-export default reducer;
+export default reducer;*/

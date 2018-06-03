@@ -1,0 +1,4 @@
+export enum LAYER_TYPES {
+    LAYER_VECTOR = 'LAYER_VECTOR',
+    LAYER_RASTER = 'LAYER_RASTER'
+};

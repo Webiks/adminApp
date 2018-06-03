@@ -62,8 +62,8 @@ const endUrl: string = '/gwc/service/wmts?SERVICE=wmts&REQUEST=getcapabilities&V
             console.log(e)});
     }*/
 
-    //const capabilitiesUrl = 'http://localhost:8080/geoserver/terra/SugarCane_geoTiff/gwc/service/wmts?SERVICE=wmts&REQUEST=getcapabilities&VERSION=1%2E0%2E0';
-    /*capabilitiesUrl = `${startUrl}${this.projectName}${this.storeName}${endUrl}`;
+    // const capabilitiesUrl = 'http://localhost:8080/geoserver/terra/SugarCane_geoTiff/gwc/service/wmts?SERVICE=wmts&REQUEST=getcapabilities&VERSION=1%2E0%2E0';
+    /* capabilitiesUrl = `${startUrl}${this.projectName}${this.storeName}${endUrl}`;
 
     layer : string = this.storeName;
     center : number[] = [-50.571, -22.7677];

@@ -14,15 +14,15 @@ export class LayerService {
     }
 
     getCoverageStores() {
-        return axios.get(`http://localhost:8080/geoserver/rest/workspaces/${worldName}/coveragestores.json`)
+        return axios.get(`http://localhost:8080/geoserver/rest/workspaces/${worldName}/coveragestores.json?user=admin&pass=geoserver`)
             .then(res => console.log(res.data.data));
     }
 
     getLayers() {
-        return axios.get(`http://localhost:8080/geoserver/rest/workspaces/${worldName}/layers.json`)
+        return axios.get(`http://localhost:8080/geoserver/rest/workspaces/${worldName}/layers.json?user=admin&pass=geoserver`)
             .then(res => {
                 console.log(res.data.data);
-                res.data.data
+                return res.data.data;
             });
     }
 
@@ -39,7 +39,8 @@ export class LayerService {
 
 }
 
+/*
 const layerSrevice = new LayerService('tb');
-layerSrevice.getLayers();
+layerSrevice.getLayers();*/
 
 

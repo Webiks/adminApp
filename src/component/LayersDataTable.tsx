@@ -1,46 +1,58 @@
 import * as React from 'react';
-
 /* Prime React components */
 import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
-import { Button } from 'primereact/components/button/Button';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
-
 import { LayerService } from "./LayerService";
 
-interface AppProps {
-    world: string;
+export interface IAppProps {
+    worldName: string;
 }
-
-/*
-interface AppState {
-    layers: Layer[];
-}
-interface Layer {
-    name: string;
-    type: string
-    format: string;
-}*/
 
 export class LayersDataTable extends React.Component {
 
-    constructor(props: AppProps) {
+    layerService: LayerService;
+    worldName: string;
+    state = {
+        layers: []
+    };
+
+    constructor(props: IAppProps) {
         super(props);
-        this.state = {};
-        this.layerService = new LayerService(props.world);
+        this.state = {
+            layers: []
+        };
+
+        this.worldName = props.worldName;
+        this.layerService = new LayerService(this.worldName);
+
+        /*
         this.save = this.save.bind(this);
         this.delete = this.delete.bind(this);
         this.onLayerSelect = this.onLayerSelect.bind(this);
-        this.addNew = this.addNew.bind(this);
+        this.addNew = this.addNew.bind(this);*/
 
     }
 
     componentDidMount() {
-        this.layerService.getLayers(this.props.projectName).then(data => this.setState({ layers: data }));
+        this.layerService.getLayers().then(data => {
+            this.setState({ layers: data })
+        });
     }
 
+    render() {
+        return (
+            <DataTable value={ this.state.layers }>
+                <Column field="name" header="Name" />
+                <Column field="type" header="Type" />
+                <Column field="format" header="Format" />
+            </DataTable>
+        );
+    }
+
+    /*
     save() {
         let layers = [...this.state.layers];
         if (this.newLayer)
@@ -171,5 +183,5 @@ export class LayersDataTable extends React.Component {
 
             </div>
         );
-    }
+    }*/
 }

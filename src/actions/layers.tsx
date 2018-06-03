@@ -1,5 +1,5 @@
 import * as actions from '../consts/action-types';
-import * as layerType from "../consts/layer-types";
+import { LAYER_TYPES } from "../consts/layer-types";
 
 // ADD RASTER
 export const addRaster = (world: string, name: string, href: string) => ({
@@ -7,7 +7,7 @@ export const addRaster = (world: string, name: string, href: string) => ({
     name: name.trim(),
     id: `${world.trim()}:${name.trim()}`,
     href: href.trim(),
-    fileType: layerType.LAYER_RASTER,
+    fileType: LAYER_TYPES.LAYER_RASTER,
     fileFormat: 'GeoTIFF'
 });
 
@@ -16,7 +16,7 @@ export const addVector = (world: string, name: string) => ({
     type: actions.ADD_VECTOR,
     name: name.trim(),
     id: `${world.trim()}:${name.trim()}`,
-    fileType: layerType.LAYER_VECTOR,
+    fileType: LAYER_TYPES.LAYER_VECTOR,
     fileFormat: 'shp'
 });
 

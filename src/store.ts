@@ -1,14 +1,16 @@
+/*
 import { createStore } from 'redux';
 import reducer from './reducers/root';
-import * as layerType from './consts/layer-types';
+import { LAYER_TYPES } from "./consts/layer-types";
+import * as interfaces from "./models/modelInterfaces";
 
-/*let workspace = 'tb';*/
+const defineFormatbyType = (type: string) => type === LAYER_TYPES.LAYER_RASTER ? 'GeoTIFF' : 'shp';
 
-const defineFormatbyType = (type: string) => {
-    type === layerType.LAYER_RASTER ? 'GeoTIFF' : 'shp';
+export interface IAppState {
+    worlds: interfaces.Worlds[];
 }
 
-const initialState = {
+const initialState: AppState = {
     worlds: [
         {
             name: 'tb',
@@ -17,8 +19,8 @@ const initialState = {
                     name: 'SugarCane',
                     href: `http://localhost:8080/geoserver/rest/workspaces/tb/layers/SugarCane.json`,
                     id: `tb:SugarCane`,
-                    type: layerType.LAYER_RASTER,
-                    format: defineFormatbyType(layerType.LAYER_RASTER)
+                    type: LAYER_TYPES.LAYER_RASTER,
+                    format: defineFormatbyType(LAYER_TYPES.LAYER_RASTER)
                 }
             ]
         }
@@ -29,5 +31,5 @@ const store = createStore(reducer, initialState);
 
 window.store = store;
 
-export default store;
+export default store;*/
 
