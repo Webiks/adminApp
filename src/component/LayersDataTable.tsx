@@ -6,9 +6,14 @@ import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
 import { LayerService } from "./LayerService";
+import { IWorldLayer } from "../models/modelInterfaces";
 
 export interface IAppProps {
     worldName: string;
+}
+
+export interface ILayersProps {
+    layers: IWorldLayer[];
 }
 
 export class LayersDataTable extends React.Component {
@@ -26,6 +31,8 @@ export class LayersDataTable extends React.Component {
         };
 
         this.worldName = props.worldName;
+        this.worldName = 'tb';
+        console.log(this.worldName);
         this.layerService = new LayerService(this.worldName);
 
         /*
