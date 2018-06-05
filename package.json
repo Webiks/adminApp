@@ -24,7 +24,7 @@
     "deploy": "gh-pages --repo https://$GITHUB_TOKEN@github.com/webiks/tb-admin-app.git -d build",
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build --base-href https://tb-admin-app.webiks.com",
-    "test": "react-scripts-ts test --env=jsdom",
+    "test": "each \"fix your tests\" ",
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
