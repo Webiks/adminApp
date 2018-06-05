@@ -5,11 +5,11 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
 import { IWorld, IWorldLayer } from "../models/modelInterfaces";
 import { connect } from "react-redux";
-import { IState } from "../index";
 import { UpdateWorldAction } from "../actions/world.actions";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
 import { LayerService } from "./LayerService";
+import { IState } from "../store";
 
 export interface IAppProps {
     worldName: string;
