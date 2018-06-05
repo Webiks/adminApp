@@ -1,9 +1,9 @@
-import * as actions from '../consts/action-types';
+import { ActionTypes } from '../consts/action-types';
 import { LAYER_TYPES } from "../consts/layer-types";
 
 // ADD RASTER
 export const addRaster = (world: string, name: string, href: string) => ({
-    type: actions.ADD_RASTER,
+    type: ActionTypes.ADD_RASTER,
     name: name.trim(),
     id: `${world.trim()}:${name.trim()}`,
     href: href.trim(),
@@ -13,7 +13,7 @@ export const addRaster = (world: string, name: string, href: string) => ({
 
 // ADD VECTOR
 export const addVector = (world: string, name: string) => ({
-    type: actions.ADD_VECTOR,
+    type: ActionTypes.ADD_VECTOR,
     name: name.trim(),
     id: `${world.trim()}:${name.trim()}`,
     fileType: LAYER_TYPES.LAYER_VECTOR,
@@ -22,7 +22,6 @@ export const addVector = (world: string, name: string) => ({
 
 // TOGGLE
 export const toggleFavorite = (id: string) => ({
-  type: actions.TOGGLE_FAVORITE,
+  type: ActionTypes.TOGGLE_FAVORITE,
   id
 });
-

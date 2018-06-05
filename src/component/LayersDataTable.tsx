@@ -1,36 +1,38 @@
 import * as React from 'react';
 /* Prime React components */
-import { DataTable } from 'primereact/components/datatable/DataTable';
-import { Column } from 'primereact/components/column/Column';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
+import { IWorld, IWorldLayer } from "../models/modelInterfaces";
+import { connect } from "react-redux";
+import { IState } from "../index";
+import { UpdateWorldAction } from "../actions/world.actions";
+import { DataTable } from "primereact/components/datatable/DataTable";
+import { Column } from "primereact/components/column/Column";
 import { LayerService } from "./LayerService";
-import { IWorldLayers } from "../models/modelInterfaces";
 
 export interface IAppProps {
     worldName: string;
 }
 
 export interface ILayersProps {
-    layers: IWorldLayers;
+    layers: IWorldLayer[];
 }
 
-export class LayersDataTable extends React.Component {
-
-    worldName: string = 'tb';
-    state = { layers: [] };
+class LayersDataTable extends React.Component {
+    props: any;
 
     componentDidMount() {
-        LayerService.getLayers(this.worldName)
-            .then(data => {
-                this.setState({ layers: data })
+        LayerService.getLayers(this.props.world.name)
+            .then(layers => {
+                const name = this.props.world.name;
+                this.props.updateWorld({ name, layers });
             });
     }
 
     render() {
         return (
-            <DataTable value={ this.state.layers }>
+           <DataTable value={ this.props.world.layers }>
                 <Column field="name" header="Name" />
                 <Column field="type" header="Type" />
                 <Column field="format" header="Format" />
@@ -171,3 +173,16 @@ export class LayersDataTable extends React.Component {
         );
     }*/
 }
+
+const mapStateToProps = (state: IState, { worldName }: any) => {
+    return {
+        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name)
+    }
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+    updateWorld: (payload: Partial<IWorld>) => dispatch(UpdateWorldAction(payload))
+});
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(LayersDataTable);
