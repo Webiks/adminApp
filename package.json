@@ -20,10 +20,11 @@
     "redux": "^4.0.0"
   },
   "scripts": {
-    "predeploy": "npm run build",
+    "predeploy": "npm run build && npm run CNAME",
     "deploy": "gh-pages --repo https://$GITHUB_TOKEN@github.com/webiks/tb-admin-app.git -d build",
     "start": "react-scripts-ts start",
-    "build": "react-scripts-ts build --base-href https://tb-admin-app.webiks.com",
+    "build": "react-scripts-ts build",
+    "CNAME": "each https://tb-admin-app.webiks.com > build/CNAME",
     "test": "each \"fix your tests\" ",
     "eject": "react-scripts-ts eject"
   },
