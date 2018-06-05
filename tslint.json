@@ -10,6 +10,9 @@
     "object-literal-sort-keys": false,
     "ordered-imports": false,
     "member-access": false,
-    "no-console": false
+    "no-console": false,
+    "no-shadowed-variable": false,
+    "jsx-no-lambda": false,
+    "no-debugger": false
   }
 }
