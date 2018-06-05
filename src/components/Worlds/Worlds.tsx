@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { IState } from '../../index';
 import './Worlds.css';
 import WorldNav from '../WorldNav/WorldNav';
+import { IState } from "../../store";
 
 const Worlds = ({ worlds }: IState) => (
     <div className="worlds">

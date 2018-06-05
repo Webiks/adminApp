@@ -1,10 +1,15 @@
 {
-  "name": "terra-admin-app",
+  "name": "tb-admin-app",
   "version": "0.1.0",
   "private": true,
   "homepage": "https://tb-admin-app.webiks.com",
   "dependencies": {
     "history": "^4.7.2",
+    "axios": "^0.18.0",
+    "classnames": "^2.2.5",
+    "font-awesome": "^4.7.0",
+    "primereact": "^1.5.3",
+    "prop-types-ts": "^0.6.0",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-redux": "^5.0.7",
@@ -19,11 +24,12 @@
     "deploy": "gh-pages --repo https://$GITHUB_TOKEN@github.com/webiks/tb-admin-app.git -d build",
     "start": "react-scripts-ts start",
     "build": "react-scripts-ts build --base-href https://tb-admin-app.webiks.com",
-    "test": "react-scripts-ts test --env=jsdom",
+    "test": "each \"fix your tests\" ",
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
     "@types/history": "^4.6.2",
+    "@types/classnames": "^2.2.4",
     "@types/jest": "^22.2.3",
     "@types/node": "^10.0.8",
     "@types/react": "^16.3.14",

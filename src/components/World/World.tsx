@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { IState } from '../../index';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
+import LayersDataTable from "../../component/LayersDataTable";
+import { IState } from "../../store";
 
 const World = ({ world, backToWorlds }: any) => (
     <div>
@@ -9,6 +10,8 @@ const World = ({ world, backToWorlds }: any) => (
             { world.name } world !
         </h1>
 
+
+        <LayersDataTable worldName={ world.name }/>
         <button onClick={backToWorlds}>Back to worlds</button>
 
     </div>

@@ -2,7 +2,7 @@ import * as React from 'react';
 import './WorldNav.css';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import { IState } from '../../index';
+import { IState } from "../../store";
 
 const WorldNav = ({ worldName, navigateTo }: any) => (
     <div className="world" onClick={ () => navigateTo(worldName) }>
