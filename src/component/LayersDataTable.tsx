@@ -6,47 +6,26 @@ import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
 import { LayerService } from "./LayerService";
-import { IWorldLayer } from "../models/modelInterfaces";
+import { IWorldLayers } from "../models/modelInterfaces";
 
 export interface IAppProps {
     worldName: string;
 }
 
 export interface ILayersProps {
-    layers: IWorldLayer[];
+    layers: IWorldLayers;
 }
 
 export class LayersDataTable extends React.Component {
 
-    layerService: LayerService;
-    worldName: string;
-    state = {
-        layers: []
-    };
-
-    constructor(props: IAppProps) {
-        super(props);
-        this.state = {
-            layers: []
-        };
-
-        this.worldName = props.worldName;
-        this.worldName = 'tb';
-        console.log(this.worldName);
-        this.layerService = new LayerService(this.worldName);
-
-        /*
-        this.save = this.save.bind(this);
-        this.delete = this.delete.bind(this);
-        this.onLayerSelect = this.onLayerSelect.bind(this);
-        this.addNew = this.addNew.bind(this);*/
-
-    }
+    worldName: string = 'tb';
+    state = { layers: [] };
 
     componentDidMount() {
-        this.layerService.getLayers().then(data => {
-            this.setState({ layers: data })
-        });
+        LayerService.getLayers(this.worldName)
+            .then(data => {
+                this.setState({ layers: data })
+            });
     }
 
     render() {

@@ -8,7 +8,11 @@ export interface IWorldLayer {
     // format: 'GeoTIFF' | 'shp'
 }
 
+export interface IWorldLayers {
+    layers: IWorldLayer[];
+}
+
 export interface IWorlds {
     name: string;
-    layers: IWorldLayer [];
+    layers: IWorldLayers;
 }
