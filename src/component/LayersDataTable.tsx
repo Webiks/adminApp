@@ -11,14 +11,6 @@ import { Column } from "primereact/components/column/Column";
 import { LayerService } from "./LayerService";
 import { IState } from "../store";
 
-export interface IAppProps {
-    worldName: string;
-}
-
-export interface ILayersProps {
-    layers: IWorldLayer[];
-}
-
 class LayersDataTable extends React.Component {
     props: any;
 
@@ -27,17 +19,28 @@ class LayersDataTable extends React.Component {
             .then(layers => {
                 const name = this.props.world.name;
                 this.props.updateWorld({ name, layers });
-            });
+        });
     }
 
     render() {
+        const layerTableData = this.props.world.layers.map( (tableLyaer: any) => this.parseTableLayer(this.props.world.name, tableLyaer));
+
+        const cols = [
+            {field: 'name', header: 'Name'},
+            {field: 'id', header: 'ID'},
+            {field: 'type', header: 'Type'}
+        ];
+
+        const dynamicColumns = cols.map((col,i) => {
+            return <Column key={col.field} field={col.field} header={col.header} />;
+        });
+
         return (
-           <DataTable value={ this.props.world.layers }>
-                <Column field="name" header="Name" />
-                <Column field="type" header="Type" />
-                <Column field="format" header="Format" />
+            <DataTable value={layerTableData}>
+                {dynamicColumns}
             </DataTable>
         );
+
     }
 
     /*
@@ -172,6 +175,14 @@ class LayersDataTable extends React.Component {
             </div>
         );
     }*/
+
+    private parseTableLayer(worldName: string, dataLayer: any): Partial<IWorldLayer> {
+        return {
+            name: dataLayer.name,
+            id: dataLayer.id,
+            type: dataLayer.type
+        };
+    }
 }
 
 const mapStateToProps = (state: IState, { worldName }: any) => {

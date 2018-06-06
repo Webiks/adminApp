@@ -1,11 +1,11 @@
-// import { LAYER_TYPES } from "../consts/layer-types";
+import { LAYER_TYPES } from "../consts/layer-types";
 
 export interface IWorldLayer {
     name: string;
-    href: string;
+    layerHref: string;
     id: string;
-    // type: LAYER_TYPES,
-    // format: 'GeoTIFF' | 'shp'
+    type: LAYER_TYPES,
+    resourceUrl: string
 }
 
 export interface IWorld {

@@ -8,8 +8,8 @@ export interface IWorldsState {
 const initialState: IWorldsState  = {
     list: [
         { name: 'tb', layers: [] },
-        { name: 'tata', layers: [] },
-        { name: 'rara', layers: [] }
+        { name: 'sf', layers: [] },
+        { name: 'topp', layers: [] }
     ]
 };
 
