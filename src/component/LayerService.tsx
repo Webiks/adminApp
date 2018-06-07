@@ -24,6 +24,13 @@ export class LayerService {
             .then(res => res.data.layer);
     }
 
+    static getLayerMetaData(worldName: string, layer: IWorldLayer): Promise<any> {
+        return axios
+            .get(`http://localhost:${config.serverPort}/api/layers/${worldName}/${layer.name}`)
+            .then(res => res.data.layer);
+    }
+
+
     static getRaster(worldName: string, layerName: string): Promise<any> {
         return axios
             .get(`http://admin:geoserver@localhost:8080/geoserver/rest/workspaces/${worldName}/coverages/${layerName}.json`)
