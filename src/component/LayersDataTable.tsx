@@ -13,6 +13,8 @@ import { IState } from "../store";
 import { Button } from "primereact/components/button/Button";
 import { Dialog } from "primereact/components/dialog/Dialog";
 import { InputText } from "primereact/components/inputtext/InputText";
+import { LAYER_TYPES } from "../consts/layer-types";
+import { Dropdown } from "primereact/components/dropdown/Dropdown";
 
 class LayersDataTable extends React.Component {
     props: any;
@@ -24,6 +26,11 @@ class LayersDataTable extends React.Component {
         layer: null,
         displayDialog: false
     };
+
+    layerSelectTypes = [
+        {label: LAYER_TYPES.LAYER_RASTER, value: LAYER_TYPES.LAYER_RASTER},
+        {label: LAYER_TYPES.LAYER_VECTOR, value: LAYER_TYPES.LAYER_VECTOR}
+    ];
 
     constructor(props: any) {
         super(props);
@@ -79,8 +86,6 @@ class LayersDataTable extends React.Component {
         this.setState({ layer });
     }
 
-    // React.FormEvent<HTMLInputElement>
-
     onLayerSelect(e: any): void {
         this.newLayer = false;
         this.setState({
@@ -115,7 +120,7 @@ class LayersDataTable extends React.Component {
 
                 <div className="content-section implementation">
                     <DataTable value={this.state.layers} paginator={true} rows={15} header={header} footer={footer}
-                               selectionMode="single" selection={this.state.selectedLayer} onSelectionChange={(e) => {
+                               selectionMode="single" selection={this.state.selectedLayer} onSelectionChange={ (e: any) => {
                         this.setState({ selectedLayer: e.data });
                     }}
                                onRowSelect={this.onLayerSelect}>
@@ -123,30 +128,31 @@ class LayersDataTable extends React.Component {
                         <Column field="type" header="Type" sortable={true}/>
                     </DataTable>
 
-                    <Dialog visible={this.state.displayDialog} header="Car Details" modal={true} footer={dialogFooter} onHide={() => this.setState({displayDialog: false})}>
-                        {this.state.car && <div className="ui-grid ui-grid-responsive ui-fluid">
+                    <Dialog visible={this.state.displayDialog} header="Layer's Details" modal={true} footer={dialogFooter} onHide={() => this.setState({displayDialog: false})}>
+                        {this.state.layer && <div className="ui-grid ui-grid-responsive ui-fluid">
                             <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="vin">Vin</label></div>
+                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="name">Name</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="vin" onChange={(e: any) => {this.updateProperty('vin', e.target.value)}} value={this.state.car.vin}/>
+                                    <InputText id="name" onChange={(e: any) => {this.updateProperty('name', e.target.value)}} value={this.state.layer.name}/>
                                 </div>
                             </div>
                             <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="year">Year</label></div>
+                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="type">Type</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="year" onChange={(e: any) => {this.updateProperty('year', e.target.value)}} value={this.state.car.year}/>
+                                    <Dropdown  id="type"  value={this.state.layer.type} options={this.layerSelectTypes}
+                                               onChange={(e: any) => {this.updateProperty('type', e.value)}} style={{width:'150px'}} placeholder="Select a Type"/>
                                 </div>
                             </div>
                             <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="brand">Brand</label></div>
+                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="resourceUrl">URL</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="brand" onChange={(e: any) => {this.updateProperty('brand', e.target.value)}} value={this.state.car.brand}/>
+                                    <InputText id="resourceUrl" onChange={(e: any) => {this.updateProperty('resourceUrl', e.target.value)}} value={this.state.layer.resourceUrl}/>
                                 </div>
                             </div>
                             <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="color">Color</label></div>
+                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="id">ID</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="color" onChange={(e: any) => {this.updateProperty('color', e.target.value)}} value={this.state.car.color}/>
+                                    <InputText id="id" onChange={(e: any) => {this.updateProperty('id', e.target.value)}} value={this.state.layer.id}/>
                                 </div>
                             </div>
                         </div>}
