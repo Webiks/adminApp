@@ -2,7 +2,6 @@ import { LAYER_TYPES } from "../consts/layer-types";
 
 export interface IWorldLayer {
     name: string;
-    layerHref: string;
     id: string;
     type: LAYER_TYPES,
     resourceUrl: string

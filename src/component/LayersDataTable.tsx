@@ -21,12 +21,9 @@ import { Dropdown } from "primereact/components/dropdown/Dropdown";
 class LayersDataTable extends React.Component {
     props: any;
     newLayer: boolean;
+    worldName: string;
 
-    state: any = {
-        selectedLayer: null,
-        layer: null,
-        displayDialog: false
-    };
+    state: any  = {};
 
     layerSelectTypes = [
         {label: LAYER_TYPES.LAYER_RASTER, value: LAYER_TYPES.LAYER_RASTER},
@@ -34,26 +31,28 @@ class LayersDataTable extends React.Component {
     ];
 
     componentDidMount() {
-        LayerService.getLayers(this.props.world.name)
+        this.worldName = this.props.world.name;
+        LayerService.getLayers(this.worldName)
             .then(layers => this.updateLayers(layers));
     };
 
-    getLayerMetaData() {
-        LayerService.getLayerMetaData(this.props.world.name, this.state.selectedLayer)
-            .then(layer => this.onLayerSelect(layer));
+    getLayerDetails(layer: IWorldLayer) {
+        LayerService.getLayerDetails(this.worldName, layer)
+            .then((layer: IWorldLayer) => {
+                console.log("getLayerMetaData: " + JSON.stringify(layer));
+                this.setState({ layer: Object.assign({}, layer ) });
+            }).catch(error => console.log(error.message));
     };
 
-    initState() {
+    setToInitState() {
         this.setState({
-            selectedLayer: null,
-            layer: null,
             displayDialog: false
         });
     };
 
     updateLayers(layers: IWorldLayer[]) {
-        this.initState();
-        const name = this.props.world.name;
+        this.setState({ layers });
+        const name = this.worldName;
         this.props.updateWorld({ name, layers });
     };
 
@@ -61,18 +60,19 @@ class LayersDataTable extends React.Component {
         const layers = [...this.props.world.layers];
         if (this.newLayer){
             layers.push(this.state.layer);
-            // layers.push(this.state.layer);
         }
         else{
             layers[this.findSelectedLayerIndex()] = this.state.layer;
         }
         this.updateLayers(layers);
+        this.setToInitState();
     };
 
     delete = () => {
         const index: number = this.findSelectedLayerIndex();
         const layers = this.props.world.layers.filter((val: IWorldLayer, i: number) => i !== index);
         this.updateLayers(layers);
+        this.setToInitState();
     };
 
     findSelectedLayerIndex() {
@@ -85,27 +85,28 @@ class LayersDataTable extends React.Component {
         this.setState({ layer });
     };
 
-    /*
-    onLayerSelect = (layer: IWorldLayer): void => {
-        this.newLayer = false;
-        this.setState({
-            displayDialog: true,
-            layer: Object.assign({}, layer)
-        });
-    }*/
-
     onLayerSelect = (e: any): void  => {
+        this.newLayer = false;
+        this.getLayerDetails(e.data);
+        this.setState({
+            selectedLayer: Object.assign({}, e.data ),
+            layer: Object.assign({}, e.data ),
+            displayDialog: true
+        });
+    };
+
+    /*onLayerSelect = (e: any): void  => {
         this.newLayer = false;
         this.setState({
             displayDialog: true,
             layer: Object.assign({}, e.data)
         });
-    };
+    };*/
 
     addNew = () => {
         this.newLayer = true;
         this.setState({
-            layer: { name: '', type: '' },
+            layer: { name: '', type: '' , resourceUrl: '', id: ''},
             displayDialog: true
         });
     };
@@ -121,17 +122,17 @@ class LayersDataTable extends React.Component {
             <Button label="Save" icon="fa-check" onClick={this.save}/>
         </div>;
 
-// <!-- onRowSelect={this.getLayerMetaData}> -->
+// onRowSelect={this.onLayerSelect}
         return (
             <div>
 
                 <div className="content-section implementation">
                     <DataTable value={this.props.world.layers} paginator={true} rows={15} header={header} footer={footer}
                                selectionMode="single" selection={this.state.selectedLayer} onSelectionChange={ (e: any) => {
-                                                this.setState({ selectedLayer: e.data });}}
+                                                this.setState({ selectedLayer: e.data }); }}
                                onRowSelect={this.onLayerSelect}>
                         <Column field="name" header="Name" sortable={true}/>
-                        <Column field="type" header="Type" sortable={false}/>
+                        <Column field="type" header="Type" sortable={true}/>
                     </DataTable>
 
                     <Dialog visible={this.state.displayDialog} header="Layer's Details" modal={true} footer={dialogFooter} onHide={() => this.setState({displayDialog: false})}>

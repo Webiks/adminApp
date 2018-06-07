@@ -8,6 +8,8 @@ import config from "../config/config";
 import { IWorldLayer } from "../models/modelInterfaces";
 import { LAYER_TYPES } from "../consts/layer-types";
 
+// const Authorization = config.authorization;
+
 export class LayerService {
 
     static getLayers(worldName: string): Promise<any> {
@@ -15,7 +17,10 @@ export class LayerService {
             .get(`http://localhost:${config.serverPort}/api/layers/${worldName}`)
             .then(res => res.data.layers.layer)
             .then(data => Promise.all(data.map((dataLayer: any) => this.parseWorldLayer(worldName, dataLayer))))
-            .then( layers =>  layers);
+            .then( layers =>  {
+                console.log("get layers: " + JSON.stringify(layers));
+                return layers;
+            });
     }
 
     static getLayerById(worldName: string, layerName: string): Promise<any> {
@@ -24,25 +29,28 @@ export class LayerService {
             .then(res => res.data.layer);
     }
 
-    static getLayerMetaData(worldName: string, layer: IWorldLayer): Promise<any> {
+    static getLayerDetails(worldName: string, layer: Partial<IWorldLayer>): Promise<any> {
+        console.log("start the getLayerDetails service...");
         return axios
-            .get(`http://localhost:${config.serverPort}/api/layers/${worldName}/${layer.name}`)
-            .then(res => res.data.layer);
+            .get(`http://localhost:${config.serverPort}/api/layers/${worldName}/${layer.name}/details`)
+            .then(res => {
+                console.log("LayerService: getLayerMetaData: " + JSON.stringify(res));
+                return res.data;
+            }).catch(error => console.log(error.message));
     }
 
-
+    /*
     static getRaster(worldName: string, layerName: string): Promise<any> {
         return axios
             .get(`http://admin:geoserver@localhost:8080/geoserver/rest/workspaces/${worldName}/coverages/${layerName}.json`)
             .then(res => res.data.data);
-    }
+    }*/
 
     private static parseWorldLayer(worldName: string, dataLayer: any) {
 
         // get the current data from the "getLayers" request
-        const layerData: IWorldLayer = {
+        const layerData: Partial<IWorldLayer> = {
             name: dataLayer.name,
-            layerHref: dataLayer.href,
             id: `${worldName}:${dataLayer.name}`,
             type: LAYER_TYPES.LAYER_UNKNOWN,
             resourceUrl: ''
@@ -50,10 +58,10 @@ export class LayerService {
 
         // get the 'type' and the 'resourceUrl' from the "getLayerById" request
         return this.getLayerById(worldName, dataLayer.name)
-                .then(layers => {
-                    layerData.type = this.defineType(layers.type);
-                    layerData.resourceUrl = layers.resource.href;
-                    return layerData;
+            .then(layer => {
+                layerData.type = this.defineType(layer.type);
+                layerData.resourceUrl = layer.resource.href;
+                return layerData;
         });
     }
 
