@@ -8,8 +8,6 @@ import config from "../config/config";
 import { IWorldLayer } from "../models/modelInterfaces";
 import { LAYER_TYPES } from "../consts/layer-types";
 
-// const Authorization = config.authorization;
-
 export class LayerService {
 
     static getLayers(worldName: string): Promise<any> {
@@ -31,20 +29,23 @@ export class LayerService {
 
     static getLayerDetails(worldName: string, layer: Partial<IWorldLayer>): Promise<any> {
         console.log("start the getLayerDetails service...");
+        let layerDetails: any;
         return axios
             .get(`http://localhost:${config.serverPort}/api/layers/${worldName}/${layer.name}/details`)
             .then(res => {
                 console.log("LayerService: getLayerMetaData: " + JSON.stringify(res));
-                return res.data;
+                switch (layer.type) {
+                    case (LAYER_TYPES.LAYER_RASTER):
+                        layerDetails = this.parseRasterDetails(res.data.coverage);
+                        break;
+                    case (LAYER_TYPES.LAYER_VECTOR):
+                        layerDetails = this.parseVectorDetails(res.data.featureType);
+                        break;
+                };
+
+                return { ...layer, ...layerDetails};
             }).catch(error => console.log(error.message));
     }
-
-    /*
-    static getRaster(worldName: string, layerName: string): Promise<any> {
-        return axios
-            .get(`http://admin:geoserver@localhost:8080/geoserver/rest/workspaces/${worldName}/coverages/${layerName}.json`)
-            .then(res => res.data.data);
-    }*/
 
     private static parseWorldLayer(worldName: string, dataLayer: any) {
 
@@ -63,6 +64,14 @@ export class LayerService {
                 layerData.resourceUrl = layer.resource.href;
                 return layerData;
         });
+    }
+
+    private static parseRasterDetails(dataLayer: any) {
+        console.log(dataLayer);
+    }
+
+    private static parseVectorDetails(dataLayer: any) {
+        console.log(dataLayer);
     }
 
     private static defineType(type: string): LAYER_TYPES {
@@ -84,12 +93,6 @@ export class LayerService {
         return layerType;
 
     }
-
-    /*
-    setLayersData(data: any){
-
-
-    }*/
 
 }
 
