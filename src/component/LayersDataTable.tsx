@@ -36,26 +36,41 @@ class LayersDataTable extends React.Component {
             .then(layers => this.updateLayers(layers));
     };
 
-    getLayerDetails(layer: IWorldLayer) {
-        LayerService.getLayerDetails(this.worldName, layer)
-            .then((layer: IWorldLayer) => {
-                console.log("getLayerMetaData: " + JSON.stringify(layer));
-                this.setState({ layer: Object.assign({}, layer ) });
-            }).catch(error => console.log(error.message));
+    update = (layer: IWorldLayer) => {
+        this.setState({ layer });
+        const layers = [...this.props.world.layers];
+        console.log("update: " + JSON.stringify(this.findSelectedLayerByName()));
+        layers[this.findSelectedLayerByName()] = layer;
+        // layers[this.findSelectedLayerIndex()] = layer;
+        this.updateLayers(layers);
     };
 
-    setToInitState() {
+    setToInitState = () => {
         this.setState({
             displayDialog: false
         });
     };
 
-    updateLayers(layers: IWorldLayer[]) {
+    updateLayers = (layers: IWorldLayer[]) => {
         this.setState({ layers });
         const name = this.worldName;
         this.props.updateWorld({ name, layers });
     };
 
+    save = () => {
+        const layers = [...this.props.world.layers];
+        if (this.newLayer){
+            layers.push(this.state.layer);
+        }
+        else{
+            console.log("save: " + JSON.stringify(this.findSelectedLayerByName()));
+            layers[this.findSelectedLayerByName()] = this.state.layer;
+        }
+        this.updateLayers(layers);
+        this.setToInitState();
+    };
+
+    /*
     save = () => {
         const layers = [...this.props.world.layers];
         if (this.newLayer){
@@ -68,18 +83,26 @@ class LayersDataTable extends React.Component {
         this.setToInitState();
     };
 
+    findSelectedLayerIndex() {
+        console.log("find selected layer's index: " + JSON.stringify(this.state.selectedLayer));
+        return this.props.world.layers.indexOf(this.state.selectedLayer);
+    };*/
+
     delete = () => {
-        const index: number = this.findSelectedLayerIndex();
-        const layers = this.props.world.layers.filter((val: IWorldLayer, i: number) => i !== index);
+        console.log("delete selected layer: " + JSON.stringify(this.state.selectedLayer));
+        const selectedLayer = this.state.selectedLayer;
+        console.log("delete layer: " + selectedLayer.name);
+        const layers = this.props.world.layers.filter((layer: IWorldLayer) => layer.name !== selectedLayer.name);
         this.updateLayers(layers);
         this.setToInitState();
     };
 
-    findSelectedLayerIndex() {
-        return this.props.world.layers.indexOf(this.state.selectedLayer);
+    findSelectedLayerByName() {
+        const selectedLayer = this.state.selectedLayer;
+        return this.props.world.layers.filter((layer: IWorldLayer) => layer.name === selectedLayer.name);
     };
 
-    updateProperty(property: string, value: any) {
+    updateProperty = (property: string, value: any) => {
         const layer = this.state.layer;
         layer[property] = value;
         this.setState({ layer });
@@ -87,26 +110,33 @@ class LayersDataTable extends React.Component {
 
     onLayerSelect = (e: any): void  => {
         this.newLayer = false;
-        this.getLayerDetails(e.data);
-        this.setState({
-            selectedLayer: Object.assign({}, e.data ),
-            layer: Object.assign({}, e.data ),
-            displayDialog: true
-        });
+        LayerService.getLayerDetails(this.worldName, e.data)
+            .then((layer: IWorldLayer) => {
+                // console.log("onLayerSelect layer: " + JSON.stringify(layer));
+                this.update(layer);
+                this.setState({
+                    // selectedLayer: Object.assign({}, e.data ),
+                    displayDialog: true
+                });
+                console.log("onLayerSelect layers: " + JSON.stringify(this.props.world.layers));
+            }).catch(error => console.log(error.message));
     };
-
-    /*onLayerSelect = (e: any): void  => {
-        this.newLayer = false;
-        this.setState({
-            displayDialog: true,
-            layer: Object.assign({}, e.data)
-        });
-    };*/
 
     addNew = () => {
         this.newLayer = true;
         this.setState({
-            layer: { name: '', type: '' , resourceUrl: '', id: ''},
+            layer: {
+                id: `${this.worldName}:`,
+                name: '',
+                type: '' ,
+                projection: '',
+                boundingBox: {
+                    minX: 0,
+                    maxX: 0,
+                    minY: 0,
+                    maxY: 0
+                }
+            },
             displayDialog: true
         });
     };
@@ -138,6 +168,12 @@ class LayersDataTable extends React.Component {
                     <Dialog visible={this.state.displayDialog} header="Layer's Details" modal={true} footer={dialogFooter} onHide={() => this.setState({displayDialog: false})}>
                         {this.state.layer && <div className="ui-grid ui-grid-responsive ui-fluid">
                             <div className="ui-grid-row">
+                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="id">ID</label></div>
+                                <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
+                                    <InputText id="id" onChange={(e: any) => {this.updateProperty('id', e.target.value)}} value={this.state.layer.id}/>
+                                </div>
+                            </div>
+                            <div className="ui-grid-row">
                                 <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="name">Name</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
                                     <InputText id="name" onChange={(e: any) => {this.updateProperty('name', e.target.value)}} value={this.state.layer.name}/>
@@ -151,15 +187,18 @@ class LayersDataTable extends React.Component {
                                 </div>
                             </div>
                             <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="resourceUrl">URL</label></div>
+                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="resourceUrl">Projection</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="resourceUrl" onChange={(e: any) => {this.updateProperty('resourceUrl', e.target.value)}} value={this.state.layer.resourceUrl}/>
+                                    <InputText id="projection" onChange={(e: any) => {this.updateProperty('projection', e.target.value)}} value={this.state.layer.projection}/>
                                 </div>
                             </div>
                             <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="id">ID</label></div>
+                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="id">Bounding Box</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="id" onChange={(e: any) => {this.updateProperty('id', e.target.value)}} value={this.state.layer.id}/>
+                                    <InputText id="boundingBoxMinX" onChange={(e: any) => {this.updateProperty('boundingBox.minX', e.target.value)}} value={this.state.layer.boundingBox.minX}/>
+                                    <InputText id="boundingBoxMaxX" onChange={(e: any) => {this.updateProperty('boundingBox.maxX', e.target.value)}} value={this.state.layer.boundingBox.maxX}/>
+                                    <InputText id="boundingBoxMinY" onChange={(e: any) => {this.updateProperty('boundingBox.minY', e.target.value)}} value={this.state.layer.boundingBox.minY}/>
+                                    <InputText id="boundingBoxMaxY" onChange={(e: any) => {this.updateProperty('boundingBox.maxY', e.target.value)}} value={this.state.layer.boundingBox.maxY}/>
                                 </div>
                             </div>
                         </div>}

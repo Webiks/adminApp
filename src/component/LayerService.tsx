@@ -5,7 +5,7 @@ import 'font-awesome/css/font-awesome.css';
 
 import axios from 'axios';
 import config from "../config/config";
-import { IWorldLayer } from "../models/modelInterfaces";
+import { IRaster, IVector, IWorldLayer } from "../models/modelInterfaces";
 import { LAYER_TYPES } from "../consts/layer-types";
 
 export class LayerService {
@@ -33,7 +33,7 @@ export class LayerService {
         return axios
             .get(`http://localhost:${config.serverPort}/api/layers/${worldName}/${layer.name}/details`)
             .then(res => {
-                console.log("LayerService: getLayerMetaData: " + JSON.stringify(res));
+                // console.log("LayerService: getLayerDetails: " + JSON.stringify(res));
                 switch (layer.type) {
                     case (LAYER_TYPES.LAYER_RASTER):
                         layerDetails = this.parseRasterDetails(res.data.coverage);
@@ -42,7 +42,7 @@ export class LayerService {
                         layerDetails = this.parseVectorDetails(res.data.featureType);
                         break;
                 };
-
+                console.log("LayerService: getLayerDetails: " + JSON.stringify({ ...layer, ...layerDetails}));
                 return { ...layer, ...layerDetails};
             }).catch(error => console.log(error.message));
     }
@@ -52,7 +52,6 @@ export class LayerService {
         // get the current data from the "getLayers" request
         const layerData: Partial<IWorldLayer> = {
             name: dataLayer.name,
-            id: `${worldName}:${dataLayer.name}`,
             type: LAYER_TYPES.LAYER_UNKNOWN,
             resourceUrl: ''
         };
@@ -66,12 +65,72 @@ export class LayerService {
         });
     }
 
+    private static parseLayerDetails(dataLayer: any) {
+        // console.log(JSON.stringify(dataLayer));
+        // console.log(JSON.stringify("boundingBox: " + JSON.stringify(dataLayer.nativeBoundingBox)));
+        return  {
+            id: dataLayer.store.name,
+            projection: dataLayer.srs,
+            boundingBox: {
+                minX: dataLayer.nativeBoundingBox.minx,
+                maxX: dataLayer.nativeBoundingBox.maxx,
+                minY: dataLayer.nativeBoundingBox.miny,
+                maxY: dataLayer.nativeBoundingBox.maxy
+            },
+            latLonBoundingBox: {
+                minX: dataLayer.latLonBoundingBox.minx,
+                maxX: dataLayer.latLonBoundingBox.maxx,
+                minY: dataLayer.latLonBoundingBox.miny,
+                maxY: dataLayer.latLonBoundingBox.maxy,
+                crs: dataLayer.latLonBoundingBox.crs
+            }
+        };
+    }
+
     private static parseRasterDetails(dataLayer: any) {
-        console.log(dataLayer);
+        // console.log(JSON.stringify(dataLayer));
+        const layerDetails: Partial<IWorldLayer> = this.parseLayerDetails(dataLayer);
+        /* const bands: any[] = dataLayer.dimensions.coverageDimensions.map( (band: any) => {
+            return {
+                name: band.name,
+                range: {
+                    min: band.range.min,
+                    max: band.range.max
+                },
+                nullValue: {
+                    double: band.nullValue.double
+                },
+                unit: band.unit
+            }
+        });*/
+
+        const raster: IRaster = {
+                format: dataLayer.nativeFormat,
+                bands: dataLayer.dimensions.coverageDimensions
+        };
+
+        return  {...layerDetails, raster};
+
     }
 
     private static parseVectorDetails(dataLayer: any) {
-        console.log(dataLayer);
+        // console.log(JSON.stringify(dataLayer));
+        const layerDetails: Partial<IWorldLayer> = this.parseLayerDetails(dataLayer);
+        const vector: IVector = {
+            metadata: {
+                entry: dataLayer.metadata.entry
+            },
+            attributes: {
+                attribute: dataLayer.attributes.attribute
+            },
+            maxFeatures: dataLayer.maxFeatures,
+            numDecimals: dataLayer.numDecimals,
+            overridingServiceSRS: dataLayer.overridingServiceSRS,
+            skipNumberMatched: dataLayer.skipNumberMatched,
+            circularArcPresent: dataLayer.circularArcPresent
+        };
+
+        return  {...layerDetails, vector};
     }
 
     private static defineType(type: string): LAYER_TYPES {
