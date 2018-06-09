@@ -7,7 +7,7 @@ export interface ILayerProps {
 
 const LayerComponent = ({ layer }: ILayerProps) => (
     <li>
-        {layer.id} ({layer.href})
+        {layer.name} ({layer.resourceUrl})
     </li>
 );
 
