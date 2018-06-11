@@ -1,7 +1,7 @@
 import axios from 'axios';
 import config from "../config/config";
-import { ILayer } from "../interfaces/ILayer";
 import { ILayerDetails } from "../interfaces/ILayerDetails";
+import { IWorldLayer } from "../interfaces/IWorldLayer";
 
 export class LayerService {
 
@@ -30,14 +30,14 @@ export class LayerService {
     }
 
     // get layer's details (field "data" - type ILayerDetails)
-    static getLayerDetails(worldName: string, layer: Partial<ILayer>): Promise<any> {
+    static getLayerDetails(worldName: string, layer: IWorldLayer): Promise<any> {
         console.log("start the getLayerDetails service...");
         const layerDetails: ILayerDetails = {};
         return axios
-            .get(`${this.urlBase}${worldName}/${layer.name}/details`)
+            .get(`${this.urlBase}${worldName}/${layer.layer.name}/details`)
             .then(res => {
                 // get the right data according to the type of the layer
-                switch (layer.type) {
+                switch (layer.layer.type) {
                     case ('RASTER'):
                         layerDetails.coverage = res.data.coverage;
                         break;
@@ -45,8 +45,8 @@ export class LayerService {
                         layerDetails.featureType = res.data.featureType;
                         break;
                 }
-                console.log("LayerService: getLayerDetails: " + JSON.stringify({ ...layer, ...layerDetails}));
-                return { ...layer, ...layerDetails};
+                layer.data = layerDetails;
+                return { ...layer};
             })
             .catch(error => console.log(error.response));
     }
@@ -55,9 +55,9 @@ export class LayerService {
     // DELETE Request
     // ==============
     // static deleteLayerById(layerId: string): Promise<any> {
-    static deleteLayerById(worldName: string, layer: Partial<ILayer>): Promise<any> {
+    static deleteLayerById(worldName: string, layer: IWorldLayer): Promise<any> {
         return axios
-            .delete(`${this.urlBase}${worldName}:${layer.name}/${layer.type}`)
+            .delete(`${this.urlBase}${worldName}:${layer.layer.name}/${layer.layer.type}`)
             .then(res => res.data)
             .catch(error => console.log(error.response));
     }
@@ -65,15 +65,14 @@ export class LayerService {
     // ====================================== Private Functions ==============================================
 
     private static parseWorldLayer(worldName: string, dataLayer: any) {
-        // set the layer id
-        const layerData: Partial<ILayer> = {
-            id: `${worldName}:${dataLayer.name}`
-        };
-
         // get more data about the layer ('type' and the 'resourceUrl' from the "getLayerByName" request)
         return this.getLayerByName(worldName, dataLayer.name)
             .then(layer => {
-                return {...layer, ...layerData};
+                // set the layer id
+                layer.id = layer.resource.name;
+                // update the layer field
+                dataLayer.layer = layer;
+                return { ...dataLayer};
             })
             .catch(error => console.log(error.response));
     }
