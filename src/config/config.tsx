@@ -1,4 +1,5 @@
 const config = {
+    ipAddress: 'localhost:',
     appPort: 3000,
     serverPort: 4000,
     authorization: "Basic YWRtaW46Z2Vvc2VydmVy",

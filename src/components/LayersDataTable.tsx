@@ -1,9 +1,12 @@
 import * as React from 'react';
 
+import { LayerService } from "../services/LayerService";
 import { IWorld } from "../interfaces/IWorld";
 import { IWorldLayer } from "../interfaces/IWorldLayer";
+import { IState } from "../store";
 import { connect } from "react-redux";
 import { UpdateWorldAction } from "../actions/world.actions";
+import { LAYER_TYPES } from "../consts/layer-types";
 
 /* Prime React components */
 import 'primereact/resources/primereact.min.css';
@@ -11,12 +14,9 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
-import { LayerService } from "../services/LayerService";
-import { IState } from "../store";
 import { Button } from "primereact/components/button/Button";
 import { Dialog } from "primereact/components/dialog/Dialog";
 import { InputText } from "primereact/components/inputtext/InputText";
-import { LAYER_TYPES } from "../consts/layer-types";
 import { Dropdown } from "primereact/components/dropdown/Dropdown";
 
 class LayersDataTable extends React.Component {
