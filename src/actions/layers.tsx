@@ -1,6 +1,4 @@
-import { ActionTypes } from '../consts/action-types';
-import { LAYER_TYPES } from "../consts/layer-types";
-
+/*
 // ADD RASTER
 export const addRaster = (world: string, name: string, href: string) => ({
     type: ActionTypes.ADD_RASTER,
@@ -25,3 +23,4 @@ export const toggleFavorite = (id: string) => ({
   type: ActionTypes.TOGGLE_FAVORITE,
   id
 });
+*/

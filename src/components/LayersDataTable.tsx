@@ -18,6 +18,7 @@ import { Button } from "primereact/components/button/Button";
 import { Dialog } from "primereact/components/dialog/Dialog";
 import { InputText } from "primereact/components/inputtext/InputText";
 import { Dropdown } from "primereact/components/dropdown/Dropdown";
+import UploadFile from './UploadFile';
 
 class LayersDataTable extends React.Component {
     props: any;
@@ -46,10 +47,7 @@ class LayersDataTable extends React.Component {
     componentDidMount() {
         this.worldName = this.props.world.name;
         LayerService.getLayers(this.worldName)
-            .then(layers => {
-                this.updateLayers(layers);
-                console.log("componentDidMount: updateLayers: " + JSON.stringify(this.props.world.layers));
-            })
+            .then(layers => this.updateLayers(layers))
             .catch(error => console.log(error.response));
     };
 
@@ -77,19 +75,14 @@ class LayersDataTable extends React.Component {
     };
 
     findSelectedLayerByName() {
-        console.log("findSelectedLayerByName: selected layer name: " + this.selectedLayer.name);
-        console.log("findSelectedLayerByName: layers: " + JSON.stringify(this.props.world.layers));
-        return this.props.world.layers.filter((layer: IWorldLayer) => {
-            console.log("findSelectedLayerByName: layer name: " + layer.layer.name);
-            return layer.layer.name === this.selectedLayer.name;
-        });
+        return this.props.world.layers.filter((layer: IWorldLayer) => layer.layer.name === this.selectedLayer.name);
     };
 
     // ============
     // CRUD Actions
     // ============
 
-    // GET: get the layer's Meta DATA (by demand)
+    // GET: get the layer's Meta DATA (by demand - On Layer Select)
     onLayerSelect = (e: any): void  => {
         this.newLayer = false;
         this.selectedLayer = e.data;
@@ -179,8 +172,8 @@ class LayersDataTable extends React.Component {
 
     render() {
         const header = <div className="ui-helper-clearfix" style={{ lineHeight: '1.87em' }}>The Layers List </div>;
-        const footer = <div className="ui-helper-clearfix" style={{ width: '100%' }}>
-            <Button style={{ float: 'left' }} icon="fa-plus" label="Add" onClick={this.addNew}/>
+        const uploader = <div className="ui-fileupload" style={{ width: '100%'}}>
+            <UploadFile/>
         </div>;
 
         const dialogFooter = <div className="ui-dialog-buttonpane ui-helper-clearfix">
@@ -192,12 +185,9 @@ class LayersDataTable extends React.Component {
             <div>
 
                 <div className="content-section implementation">
-                    <DataTable value={this.props.world.layers} paginator={true} rows={15} header={header} footer={footer}
+                    <DataTable value={this.props.world.layers} paginator={true} rows={15} header={header} footer={uploader}
                                selectionMode="single" selection={this.selectedLayer}
-                               onSelectionChange={ (e: any) => {
-                                   this.selectedLayer = e.data;
-                                   console.log("DIV selected layer: " + JSON.stringify(this.selectedLayer));
-                               } }
+                               onSelectionChange={ (e: any) => this.selectedLayer = e.data}
                                onRowSelect={this.onLayerSelect}>
                         <Column field="name" header="Name" sortable={true}/>
                         <Column field="layer.type" header="Type" sortable={true}/>
@@ -260,3 +250,8 @@ const mapDispatchToProps = (dispatch: any) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LayersDataTable);
+
+// const footer = <div className="ui-helper-clearfix" style={{ width: '100%' }}>
+//      <Button style={{ float: 'left' }} icon="fa-plus" label="Add" onClick={this.addNew}/>
+// </div>
+// onSelectionChange={ (e: any) => this.selectedLayer = e.data}
