@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import LayersDataTable from "../../component/LayersDataTable";
+import LayersDataTable from "../LayersDataTable";
 import { IState } from "../../store";
 
 const World = ({ world, backToWorlds }: any) => (
