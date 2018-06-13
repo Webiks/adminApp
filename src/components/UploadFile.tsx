@@ -9,33 +9,49 @@ import { IState } from "../store";
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
-// import { Link } from 'react-router-dom';
-// import { Growl } from 'primereact/components/growl/Growl';
 import { FileUpload } from 'primereact/components/fileupload/FileUpload';
-// import { TabView,TabPanel } from 'primereact/components/tabview/TabView';
-// import { CodeHighlight } from 'primereact/codehighlight/CodeHighlight';
-
+import { UploadFileService } from '../services/UploadFileService';
 
 class UploadFile extends React.Component {
     props: any;
-    urlRaster = `C:/dev/Terrabiks/tb-admin-app/src/upload/rasters`;
-    urlVector = `C:/dev/Terrabiks/tb-admin-app/src/upload/vectors`;
-    // fileUpload = new FileUpload(this.props);
+    worldName: string;
+    url: string;
+    urlRaster: string;
+    urlVector: string;
+    urlBase: string = `http://${config.ipAddress}${config.serverPort}/api/upload/`;
 
-    onUpload = (event: any) => {
+    componentDidMount() {
+        this.worldName = this.props.worldName;
+        this.url = `${this.urlBase}${this.worldName}`;
+        this.urlRaster = `${this.url}/rasters`;
+        this.urlVector = `${this.url}/vectors`;
+        console.log("props: " + JSON.stringify(this.props));
+    }
+
+    onUpload = (e: any) => {
         console.log("start to upload...");
+        console.log("event data: " + e.data);
+        UploadFileService.upload(this.props.world.name, e.data.file)
+            .then(success => console.log("the upload succeed!"))
+            .catch(error => console.log(error));
+    };
+
+    onError = (e: any) => {
+        console.log("error: " + e.data);
     }
 
     render() {
         return (
             <div>
                 <div className="content-section implementation">
-                    <FileUpload mode="basic" name="uploadRaster[]" url={this.urlRaster} multiple={true}
-                                accept="image/tif"
-                                maxFileSize={config.maxFileSize} onUpload={this.onUpload} auto={true}
-                                chooseLabel="Add Raster"/>
+                    <FileUpload mode="basic" name="uploadRaster" multiple={true} url={this.urlRaster}
+                                accept="image/tiff" maxFileSize={config.maxFileSize} auto={true}
+                                chooseLabel="Add Raster" onUpload={this.onUpload}
+                                onSelect={(e: any) => {
+                                    console.log("event data: " + JSON.stringify(e.file));
+                                }}/>
 
-                    <FileUpload mode="basic" name="uploadVector[]" url={this.urlVector} multiple={true}
+                    <FileUpload mode="basic" name="uploadVector" multiple={true} url={this.urlVector}
                                 accept="image/shp, image/shx, image/dbf, image/prj, image/qix, image/zip"
                                 maxFileSize={config.maxFileSize} onUpload={this.onUpload} auto={true}
                                 chooseLabel="Add Vector"/>
@@ -45,38 +61,6 @@ class UploadFile extends React.Component {
         )
     }
 }
-
-
-/*
-class UploadFile extends React.Component {
-    props: any;
-    growl: any;
-
-
-    onBeforeUpload = (event.xhr: XmlHttpRequest, event.formData: FormData ) => {
-
-    }
-
-    onUpload = (event: any) => {
-        this.growl.show({severity: 'info', summary: 'Success', detail: 'File Uploaded'});
-    }
-
-    render() {
-        return (
-            <div>
-                <div className="content-section implementation">
-                    <FileUpload mode="basic" name="uploadRaster[]" url="./upload/rasters" multiple={true} accept="image/tif"
-                                maxFileSize={config.maxFileSize} onUpload={this.onUpload} auto={true} chooseLabel="Browse" />
-
-                    <FileUpload mode="basic" name="uploadVector[]" url="./upload/rasters" multiple={true} accept="image/shp, image/shx, image/dbf, image/prj, image/qix, image/zip"
-                                maxFileSize={config.maxFileSize} onUpload={this.onUpload} auto={true} chooseLabel="Browse" />
-
-                    <Growl ref={(el) => { this.growl = el; }}/>
-                </div>
-            </div>
-        )
-    }
-}*/
 
 const mapStateToProps = (state: IState, { worldName }: any) => {
     return {

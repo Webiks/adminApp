@@ -17,7 +17,7 @@ export class LayerService {
             .get(`${this.urlBase}${worldName}`)
             .then(res => res.data.layers.layer)
             .then(data => Promise.all(data.map((dataLayer: any) => this.parseWorldLayer(worldName, dataLayer))))
-            .catch(error => console.log(error.response));
+            .catch(error => console.log(error));
     }
 
     // get layer's more data (filed "layer" - type ILayer)
@@ -26,7 +26,7 @@ export class LayerService {
         return axios
             .get(`${this.urlBase}${worldName}/${layerName}`)
             .then(res => res.data.layer)
-            .catch(error => console.log(error.response));
+            .catch(error => console.log(error));
     }
 
     // get layer's details (field "data" - type ILayerDetails)
@@ -48,7 +48,7 @@ export class LayerService {
                 layer.data = layerDetails;
                 return { ...layer};
             })
-            .catch(error => console.log(error.response));
+            .catch(error => console.log(error));
     }
 
     // ==============
@@ -59,7 +59,7 @@ export class LayerService {
         return axios
             .delete(`${this.urlBase}${worldName}:${layer.layer.name}/${layer.layer.type}`)
             .then(res => res.data)
-            .catch(error => console.log(error.response));
+            .catch(error => console.log(error));
     }
 
     // ====================================== Private Functions ==============================================
@@ -74,7 +74,7 @@ export class LayerService {
                 dataLayer.layer = layer;
                 return { ...dataLayer};
             })
-            .catch(error => console.log(error.response));
+            .catch(error => console.log(error));
     }
 }
 

@@ -21,7 +21,7 @@ export class WorldService {
                     layers: [],
                 }
             }))
-            .catch(error => console.log(error.response));
+            .catch(error => console.log(error));
     }
 
 }

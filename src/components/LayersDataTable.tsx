@@ -173,7 +173,7 @@ class LayersDataTable extends React.Component {
     render() {
         const header = <div className="ui-helper-clearfix" style={{ lineHeight: '1.87em' }}>The Layers List </div>;
         const uploader = <div className="ui-fileupload" style={{ width: '100%'}}>
-            <UploadFile/>
+            <UploadFile worldName={ this.props.world.name }/>
         </div>;
 
         const dialogFooter = <div className="ui-dialog-buttonpane ui-helper-clearfix">
