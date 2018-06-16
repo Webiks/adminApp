@@ -7,6 +7,7 @@ import { IState } from "../store";
 import { connect } from "react-redux";
 import { UpdateWorldAction } from "../actions/world.actions";
 import { LAYER_TYPES } from "../consts/layer-types";
+import UploadFile from './UploadFile';
 
 /* Prime React components */
 import 'primereact/resources/primereact.min.css';
@@ -18,7 +19,8 @@ import { Button } from "primereact/components/button/Button";
 import { Dialog } from "primereact/components/dialog/Dialog";
 import { InputText } from "primereact/components/inputtext/InputText";
 import { Dropdown } from "primereact/components/dropdown/Dropdown";
-import UploadFile from './UploadFile';
+import ProgressBarComponent from './ProgressBarComponent';
+import { ProgressBar } from 'primereact/components/progressbar/ProgressBar';
 
 class LayersDataTable extends React.Component {
     props: any;
@@ -36,7 +38,9 @@ class LayersDataTable extends React.Component {
         }
     };
 
-    state: any  = {};
+    state: any  = {
+        displayProgressBar: false
+    };
 
     layerSelectTypes = [
         {label: LAYER_TYPES.LAYER_RASTER, value: LAYER_TYPES.LAYER_RASTER},
@@ -46,9 +50,7 @@ class LayersDataTable extends React.Component {
     // GET: get the world's layers on startUp
     componentDidMount() {
         this.worldName = this.props.world.name;
-        LayerService.getLayers(this.worldName)
-            .then(layers => this.updateLayers(layers))
-            .catch(error => console.log(error.response));
+        this.getLayers();
     };
 
     zeroSelectedLayer = () => {
@@ -70,7 +72,8 @@ class LayersDataTable extends React.Component {
 
     setToInitState = () => {
         this.setState({
-            displayDialog: false
+            displayDialog: false,
+            displayProgressBar: false
         });
     };
 
@@ -81,6 +84,14 @@ class LayersDataTable extends React.Component {
     // ============
     // CRUD Actions
     // ============
+
+    // GET: get the world's layers
+    getLayers = (): void  => {
+        console.log("getLayers...");
+        LayerService.getLayers(this.worldName)
+            .then(layers => this.updateLayers(layers))
+            .catch(error => console.log(error.response));
+    }
 
     // GET: get the layer's Meta DATA (by demand - On Layer Select)
     onLayerSelect = (e: any): void  => {
@@ -120,8 +131,10 @@ class LayersDataTable extends React.Component {
     };
 
     updateLayers = (layers: IWorldLayer[]) => {
+        console.log("Layer Data Table: updateLayers...");
         const name = this.worldName;
         this.props.updateWorld({ name, layers });
+        this.setToInitState();
     };
 
     save = () => {
@@ -161,6 +174,7 @@ class LayersDataTable extends React.Component {
             .catch(error => console.log(error.response));
     };
 
+    /*
     // ADD New layer
     addNew = () => {
         this.newLayer = true;
@@ -168,18 +182,25 @@ class LayersDataTable extends React.Component {
         this.setState({
             displayDialog: true
         });
-    };
+    };*/
 
     render() {
         const header = <div className="ui-helper-clearfix" style={{ lineHeight: '1.87em' }}>The Layers List </div>;
-        const uploader = <div className="ui-fileupload" style={{ width: '100%'}}>
-            <UploadFile worldName={ this.props.world.name }/>
-        </div>;
+        const uploader =
+            <div className="ui-fileupload" style={{ width: '100%'}}>
+                <UploadFile worldName={ this.props.world.name }
+                            onProgress={(e:any) => <ProgressBar value={this.state.progress} showValue={this.state.displayProgressBar} />}
+                            onUpload={(e:any) => {
+                                this.setState({ displayProgressBar: false});
+                                this.getLayers();
+                            }}/>
+            </div>;
 
-        const dialogFooter = <div className="ui-dialog-buttonpane ui-helper-clearfix">
-            <Button icon="fa-close" label="Delete" onClick={this.delete}/>
-            <Button label="Save" icon="fa-check" onClick={this.save}/>
-        </div>;
+        const dialogFooter =
+            <div className="ui-dialog-buttonpane ui-helper-clearfix">
+                <Button icon="fa-close" label="Delete" onClick={this.delete}/>
+                <Button label="Save" icon="fa-check" onClick={this.save}/>
+            </div>;
 
         return (
             <div>
@@ -198,7 +219,7 @@ class LayersDataTable extends React.Component {
                             <div className="ui-grid-row">
                                 <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="id">ID</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="id" value={this.selectedLayer.layer.id}/>
+                                    <InputText id="id" value={this.selectedLayer.layer.id} readOnly={true}/>
                                 </div>
                             </div>
                             <div className="ui-grid-row">
@@ -217,16 +238,16 @@ class LayersDataTable extends React.Component {
                             <div className="ui-grid-row">
                                 <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="srs">Projection</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="srs" value={this.selectedLayerType.srs}/>
+                                    <InputText id="srs" value={this.selectedLayerType.srs} readOnly={true}/>
                                 </div>
                             </div>
                             <div className="ui-grid-row">
                                 <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="id">Bounding Box</label></div>
                                 <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="nativeBoundingBoxminX" value={this.selectedLayerType.nativeBoundingBox.minx}/>
-                                    <InputText id="nativeBoundingBoxminX" value={this.selectedLayerType.nativeBoundingBox.maxx}/>
-                                    <InputText id="nativeBoundingBoxmaxY" value={this.selectedLayerType.nativeBoundingBox.miny}/>
-                                    <InputText id="nativeBoundingBoxminY" value={this.selectedLayerType.nativeBoundingBox.maxy}/>
+                                    <InputText id="nativeBoundingBoxminX" value={this.selectedLayerType.nativeBoundingBox.minx} readOnly={true}/>
+                                    <InputText id="nativeBoundingBoxminX" value={this.selectedLayerType.nativeBoundingBox.maxx} readOnly={true}/>
+                                    <InputText id="nativeBoundingBoxmaxY" value={this.selectedLayerType.nativeBoundingBox.miny} readOnly={true}/>
+                                    <InputText id="nativeBoundingBoxminY" value={this.selectedLayerType.nativeBoundingBox.maxy} readOnly={true}/>
                                 </div>
                             </div>
 
