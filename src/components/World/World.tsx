@@ -1,19 +1,18 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import LayersDataTable from "../../component/LayersDataTable";
+import WorldHomePage from "../WorldHomePage";
 import { IState } from "../../store";
+import { IWorld } from '../../interfaces/IWorld';
+import { WorldsActions } from '../../actions/world.actions';
 
 const World = ({ world, backToWorlds }: any) => (
     <div>
         <h1>
             { world.name } world !
         </h1>
-
-
-        <LayersDataTable worldName={ world.name }/>
+        <WorldHomePage worldName={ world.name }/>
         <button onClick={backToWorlds}>Back to worlds</button>
-
     </div>
 );
 
@@ -22,6 +21,11 @@ const mapStateToProps = (state: IState, props: any) => ({
 });
 
 const mapDispatchToProps = (dispatch: any) => ({
+    setWorlds: (payload: IWorld[]) => {
+        const action = WorldsActions.setWorldsAction(payload);
+        console.log(action);
+        return dispatch('action', action);
+    },
     backToWorlds: () => dispatch(push('/'))
 });
 

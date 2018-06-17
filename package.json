@@ -4,10 +4,10 @@
   "private": true,
   "homepage": "https://tb-admin-app.webiks.com",
   "dependencies": {
-    "history": "^4.7.2",
     "axios": "^0.18.0",
     "classnames": "^2.2.5",
     "font-awesome": "^4.7.0",
+    "history": "^4.7.2",
     "primereact": "^1.5.3",
     "prop-types-ts": "^0.6.0",
     "react": "^16.3.2",
@@ -17,6 +17,7 @@
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.9",
     "react-scripts-ts": "2.16.0",
+    "react-transition-group": "^2.3.1",
     "redux": "^4.0.0"
   },
   "scripts": {
