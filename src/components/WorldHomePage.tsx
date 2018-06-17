@@ -4,9 +4,10 @@ import { LayerService } from "../services/LayerService";
 import { IWorld } from "../interfaces/IWorld";
 import { IWorldLayer } from "../interfaces/IWorldLayer";
 import { IState } from "../store";
+import { IPropsLayers } from '../interfaces/IPropsLayers';
 import { connect } from "react-redux";
-import { UpdateWorldAction } from "../actions/world.actions";
 import { LAYER_TYPES } from "../consts/layer-types";
+import { WorldsActions } from '../actions/world.actions';
 import UploadFile from './UploadFile';
 
 /* Prime React components */
@@ -19,11 +20,16 @@ import { Button } from "primereact/components/button/Button";
 import { Dialog } from "primereact/components/dialog/Dialog";
 import { InputText } from "primereact/components/inputtext/InputText";
 import { Dropdown } from "primereact/components/dropdown/Dropdown";
-import ProgressBarComponent from './ProgressBarComponent';
 import { ProgressBar } from 'primereact/components/progressbar/ProgressBar';
 
-class LayersDataTable extends React.Component {
-    props: any;
+export interface IStateWorldPage {
+    displayDialog: boolean,
+    displayProgressBar: boolean,
+    value1: number
+}
+
+class WorldHomePage extends React.Component {
+    props: IPropsLayers;
     newLayer: boolean;
     worldName: string;
     selectedLayer: any;
@@ -38,8 +44,10 @@ class LayersDataTable extends React.Component {
         }
     };
 
-    state: any  = {
-        displayProgressBar: false
+    state: IStateWorldPage = {
+        displayDialog: false,
+        displayProgressBar: false,
+        value1: 0
     };
 
     layerSelectTypes = [
@@ -77,7 +85,7 @@ class LayersDataTable extends React.Component {
         });
     };
 
-    findSelectedLayerByName() {
+    findSelectedLayerByName = () => {
         return this.props.world.layers.filter((layer: IWorldLayer) => layer.layer.name === this.selectedLayer.name);
     };
 
@@ -91,7 +99,7 @@ class LayersDataTable extends React.Component {
         LayerService.getLayers(this.worldName)
             .then(layers => this.updateLayers(layers))
             .catch(error => console.log(error.response));
-    }
+    };
 
     // GET: get the layer's Meta DATA (by demand - On Layer Select)
     onLayerSelect = (e: any): void  => {
@@ -125,8 +133,8 @@ class LayersDataTable extends React.Component {
     // PUT: Update and save
     update = (layer: IWorldLayer) => {
         const layers = [...this.props.world.layers];
-        console.log("update: " + JSON.stringify(this.findSelectedLayerByName()));
-        layers[this.findSelectedLayerByName()] = layer;
+        console.log("update: " + JSON.stringify(this.selectedLayer));
+        layers[this.selectedLayer] = layer;
         this.updateLayers(layers);
     };
 
@@ -144,7 +152,7 @@ class LayersDataTable extends React.Component {
         }
         else{
             console.log("save: " + JSON.stringify(this.findSelectedLayerByName()));
-            layers[this.findSelectedLayerByName()] = this.selectedLayer;
+            layers[this.selectedLayer] = this.selectedLayer;
         }
         this.updateLayers(layers);
         this.setToInitState();
@@ -158,7 +166,7 @@ class LayersDataTable extends React.Component {
 
     // DELETE
     delete = () => {
-        LayerService.deleteLayerById(this.worldName, this.state.layer)
+        LayerService.deleteLayerById(this.worldName, this.selectedLayer)
         // LayerService.deleteLayerById(this.worldName, this.state.layer.name)
             .then (res => {
                 if (res !== 'error'){
@@ -189,7 +197,7 @@ class LayersDataTable extends React.Component {
         const uploader =
             <div className="ui-fileupload" style={{ width: '100%'}}>
                 <UploadFile worldName={ this.props.world.name }
-                            onProgress={(e:any) => <ProgressBar value={this.state.progress} showValue={this.state.displayProgressBar} />}
+                            onProgress={(e:any) => <ProgressBar value={this.state.value1} showValue={this.state.displayProgressBar} />}
                             onUpload={(e:any) => {
                                 this.setState({ displayProgressBar: false});
                                 this.getLayers();
@@ -267,10 +275,10 @@ const mapStateToProps = (state: IState, { worldName }: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
-    updateWorld: (payload: Partial<IWorld>) => dispatch(UpdateWorldAction(payload))
+    updateWorld: (payload: IWorld) => dispatch(WorldsActions.updateWorldAction(payload))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LayersDataTable);
+export default connect(mapStateToProps, mapDispatchToProps)(WorldHomePage);
 
 // const footer = <div className="ui-helper-clearfix" style={{ width: '100%' }}>
 //      <Button style={{ float: 'left' }} icon="fa-plus" label="Add" onClick={this.addNew}/>

@@ -3,9 +3,10 @@ import * as React from 'react';
 import config from "../config/config";
 import { IWorld } from "../interfaces/IWorld";
 import { IWorldLayer } from '../interfaces/IWorldLayer';
-import { UpdateWorldAction } from "../actions/world.actions";
+import { WorldsActions } from '../actions/world.actions';
 import { connect } from "react-redux";
 import { IState } from "../store";
+import { IPropsLayers } from '../interfaces/IPropsLayers';
 
 import { FileUpload } from 'primereact/components/fileupload/FileUpload';
 import { LayerService } from '../services/LayerService';
@@ -15,24 +16,23 @@ import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
 
+export interface IStateUpload {
+    displayProgressBar: boolean
+}
+
 class UploadFile extends React.Component {
-    props: any;
-    state: any  = {};
+    props: IPropsLayers;
+    state: IStateUpload = {
+        displayProgressBar: false
+    };
     worldName: string;
     layers: IWorldLayer[];
     url: string;
-    urlRaster: string;
-    urlVector: string;
-    urlBase: string = `http://${config.ipAddress}${config.serverPort}/api/upload`;
 
     componentDidMount() {
-        this.worldName = this.props.worldName;
-        this.layers = this.props.layers;
-        this.url = `${this.urlBase}/${this.worldName}`;
-        // this.urlRaster = `${this.urlBase}/raster/${this.worldName}`;
-        // this.urlVector = `${this.urlBase}/vector/${this.worldName}`;
-        // console.log("urlRaster: " + this.urlRaster);
-        // console.log("urlVector: " + this.urlVector);
+        this.worldName = this.props.world.name;
+        this.layers = this.props.world.layers;
+        this.url = `${config.baseUrlApi}/upload/${this.worldName}`;
     };
 
     // get all the world's layer again after adding the new layer
@@ -59,7 +59,7 @@ class UploadFile extends React.Component {
             <div>
                 <div className="content-section implementation">
                     <FileUpload mode="advanced" name="uploads" multiple={true} url={this.url}
-                                accept="image/tiff, .shp,.shx, .dbf,.prj, .qix .xml .sbn .sbx"
+                                accept="image/tiff, .shp,.shx, .dbf,.prj, .qix, .xml, .sbn, .sbx, .zip"
                                 maxFileSize={config.maxFileSize} auto={true}
                                 chooseLabel="add"
                                 onUpload={this.onUpload}/>
@@ -76,14 +76,7 @@ const mapStateToProps = (state: IState, { worldName }: any) => {
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
-    updateWorld: (payload: Partial<IWorld>) => dispatch(UpdateWorldAction(payload))
+    updateWorld: (payload: IWorld) => dispatch(WorldsActions.updateWorldAction(payload))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UploadFile);
-
-// withCredentials={true}
-// type="file" webkitdirectory={true} mozdirectory={true}
-// <FileUpload mode="advanced" name="uploadVectors" multiple={true} url={this.urlVector}
-//                                 accept="image/shp, image/shx, image/dbf, image/prj, image/qix"
-//                                 maxFileSize={config.maxFileSize} chooseLabel="Add Vector" auto={true}
-//                                 onUpload={this.onUpload}/>

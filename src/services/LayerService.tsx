@@ -5,7 +5,7 @@ import { IWorldLayer } from "../interfaces/IWorldLayer";
 
 export class LayerService {
 
-    static urlBase: string = `http://${config.ipAddress}${config.serverPort}/api/layers/`;
+    static baseUrl: string = `${config.baseUrlApi}/layers/`;
 
     // ==============
     //  GET Requests
@@ -14,7 +14,7 @@ export class LayerService {
     static getLayers(worldName: string): Promise<any> {
         console.log("start the getLayers service...");
         return axios
-            .get(`${this.urlBase}${worldName}`)
+            .get(`${this.baseUrl}${worldName}`)
             .then(res => res.data.layers.layer)
             .then(data => Promise.all(data.map((dataLayer: any) => this.parseWorldLayer(worldName, dataLayer))))
             .catch(error => console.log(error));
@@ -24,7 +24,7 @@ export class LayerService {
     static getLayerByName(worldName: string, layerName: string): Promise<any> {
         console.log("start the getLayerByName service...");
         return axios
-            .get(`${this.urlBase}${worldName}/${layerName}`)
+            .get(`${this.baseUrl}${worldName}/${layerName}`)
             .then(res => res.data.layer)
             .catch(error => console.log(error));
     }
@@ -34,7 +34,7 @@ export class LayerService {
         console.log("start the getLayerDetails service...");
         const layerDetails: ILayerDetails = {};
         return axios
-            .get(`${this.urlBase}${worldName}/${layer.layer.name}/details`)
+            .get(`${this.baseUrl}${worldName}/${layer.layer.name}/details`)
             .then(res => {
                 // get the right data according to the type of the layer
                 switch (layer.layer.type) {
@@ -57,7 +57,7 @@ export class LayerService {
     // static deleteLayerById(layerId: string): Promise<any> {
     static deleteLayerById(worldName: string, layer: IWorldLayer): Promise<any> {
         return axios
-            .delete(`${this.urlBase}${worldName}:${layer.layer.name}/${layer.layer.type}`)
+            .delete(`${this.baseUrl}${worldName}:${layer.layer.name}/${layer.layer.type}`)
             .then(res => res.data)
             .catch(error => console.log(error));
     }
