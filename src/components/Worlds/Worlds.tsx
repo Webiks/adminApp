@@ -4,9 +4,9 @@ import './Worlds.css';
 import WorldNav from '../WorldNav/WorldNav';
 import { IState } from '../../store';
 import { IWorld } from '../../interfaces/IWorld';
-import { WorldsActions } from '../../actions/world.actions';
 import { WorldService } from '../../services/WorldService';
 import { ITBAction } from '../../consts/action-types';
+import { WorldsActions } from '../../actions/world.actions';
 
 export interface IPropsWorlds {
     worldsList: IWorld[],
@@ -18,10 +18,14 @@ class Worlds extends React.Component {
 
     // GET: get all worlds on startUp
     componentDidMount() {
-        console.log('reducer: start the getWorlds function...');
+        console.log("app props: " + JSON.stringify(this.props));
         WorldService.getWorlds()
-            .then((worlds: IWorld[]) => this.props.setWorlds(worlds || []))
+            .then((worlds: IWorld[]) => {
+                console.log("world list: " + JSON.stringify(worlds));
+                return this.props.setWorlds(worlds || []);
+            })
             .catch(error => this.props.setWorlds([]));
+
     };
 
     render() {
@@ -33,14 +37,14 @@ class Worlds extends React.Component {
 }
 
 const mapStateToProps = (state: IState) => {
-    console.log(state);
+    console.log("Worlds state: " + JSON.stringify(state));
     return {
         worldsList: state.worlds.list
     };
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
-    setWorlds: (payload: IWorld[]) => dispatch(WorldsActions.setWorldsAction(payload)),
+    setWorlds: (payload: IWorld[]) => dispatch(WorldsActions.setWorldsAction(payload))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Worlds);

@@ -15,15 +15,18 @@ import { LayerService } from '../services/LayerService';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
+import { ProgressBar } from 'primereact/components/progressbar/ProgressBar';
 
-export interface IStateUpload {
-    displayProgressBar: boolean
+export interface IStateProgress {
+    displayProgressBar: boolean,
+    value1: number
 }
 
 class UploadFile extends React.Component {
     props: IPropsLayers;
-    state: IStateUpload = {
-        displayProgressBar: false
+    state: IStateProgress = {
+        displayProgressBar: false,
+        value1: 0
     };
     worldName: string;
     layers: IWorldLayer[];
@@ -38,7 +41,13 @@ class UploadFile extends React.Component {
     // get all the world's layer again after adding the new layer
     onUpload = (e: any) => {
         console.log("On Upload...");
-        LayerService.getLayers(this.props.world.name)
+        e.preventDefault();
+        this.setState({
+            displayProgressBar: false,
+            value1: 0
+        });
+        // get all the layers again, after loading the new layer to geoserver
+        LayerService.getAllLayersData(this.props.world.name)
             .then(layers => this.updateLayers(layers))
             .catch(error => console.log(error.response));
     };
@@ -62,6 +71,7 @@ class UploadFile extends React.Component {
                                 accept="image/tiff, .shp,.shx, .dbf,.prj, .qix, .xml, .sbn, .sbx, .zip"
                                 maxFileSize={config.maxFileSize} auto={true}
                                 chooseLabel="add"
+                                onProgress={(e:any) => <ProgressBar value={this.state.value1} showValue={this.state.displayProgressBar} />}
                                 onUpload={this.onUpload}/>
                 </div>
             </div>

@@ -23,4 +23,17 @@ export class WorldService {
             }))
     }
 
+    static getWorld(name: string): Promise<any> {
+        return axios
+            .get(`${this.baseUrl}/${name}`)
+            .then(res => {
+                console.log("worldService: world name: " + res.data.workspace.name);
+                return {
+                    name: res.data.workspace.name,
+                    layers: [],
+                }
+            })
+            .catch(() => undefined);
+    }
+
 }

@@ -15,6 +15,7 @@ import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { Button } from 'primereact/components/button/Button';
 import { IWorldLayer } from '../../interfaces/IWorldLayer';
+import UploadFile from '../UploadFile';
 
 export interface IStateTable {
     selectedLayer: any
@@ -57,7 +58,7 @@ class LayersDataTable extends React.Component {
             <DataTable  value={this.props.world.layers} paginator={true} rows={10} responsive={false}
                         resizableColumns={true} autoLayout={true}
                         header={<Header tableTitle={`${this.props.world.name} World's Files List`}/>}
-                        footer={<Footer worldName={ this.props.world.name }/>}
+                        footer={<UploadFile worldName={this.props.world.name} />}
                         selectionMode="single" selection={this.state.selectedLayer}
                         onSelectionChange={(e: any)=>{this.setState({selectedLayer: e.data});}}>
                     <Column field="layer.name" header="Name" sortable={true}/>
