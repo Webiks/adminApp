@@ -1,7 +1,13 @@
+import { IStore } from './IStore';
+
 export interface ILayer {
-    id: string,
+    id: string,                     // 'worldname:layername'
     name: string,
-    type: string,
+    type: string,                   // 'RASTER' or 'VECTOR'
+    storeName: string,
+    filePath: string,
+    fileName: string,
+    fileExtension: string,
     defaultStyle: IDefaultStyle,
     resource: IResource,
     attribution: IAttribution

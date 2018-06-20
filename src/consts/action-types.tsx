@@ -1,5 +1,3 @@
-import { IWorld } from '../interfaces/IWorld';
-
 export enum ActionTypes {
     SET_WORLDS = 'SET_WORLDS',
     UPDATE_WORLD = 'UPDATE_WORLD',

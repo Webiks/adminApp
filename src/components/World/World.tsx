@@ -8,16 +8,21 @@ import { WorldsActions } from '../../actions/world.actions';
 
 const World = ({ world, backToWorlds }: any) => (
     <div>
-        <h1>
-            { world.name } world !
-        </h1>
+        <h1> { world.name } world !</h1>
+
         <WorldHomePage worldName={ world.name }/>
+
         <button onClick={backToWorlds}>Back to worlds</button>
+
     </div>
+
 );
 
 const mapStateToProps = (state: IState, props: any) => ({
-    world: state.worlds.list.find(({ name }) => name === props.match.params.worldId )
+    world: state.worlds.list.find(({ name }) => {
+        console.log("WORLD: world name = " + props.match.params.worldId);
+        return name === props.match.params.worldId
+    } )
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

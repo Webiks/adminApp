@@ -8,19 +8,13 @@ import { IPropsLayers } from '../interfaces/IPropsLayers';
 import { connect } from "react-redux";
 import { LAYER_TYPES } from "../consts/layer-types";
 import { WorldsActions } from '../actions/world.actions';
-import UploadFile from './UploadFile';
 
 /* Prime React components */
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
-import { DataTable } from "primereact/components/datatable/DataTable";
-import { Column } from "primereact/components/column/Column";
-import { Button } from "primereact/components/button/Button";
-import { Dialog } from "primereact/components/dialog/Dialog";
-import { InputText } from "primereact/components/inputtext/InputText";
-import { Dropdown } from "primereact/components/dropdown/Dropdown";
-import { ProgressBar } from 'primereact/components/progressbar/ProgressBar';
+import LayersDataTable from './DataTable/LayersDataTable';
+import { WorldService } from '../services/WorldService';
 
 export interface IStateWorldPage {
     displayDialog: boolean,
@@ -58,7 +52,7 @@ class WorldHomePage extends React.Component {
     // GET: get the world's layers on startUp
     componentDidMount() {
         this.worldName = this.props.world.name;
-        this.getLayers();
+        this.getAllLayersData();
     };
 
     zeroSelectedLayer = () => {
@@ -94,11 +88,11 @@ class WorldHomePage extends React.Component {
     // ============
 
     // GET: get the world's layers
-    getLayers = (): void  => {
-        console.log("getLayers...");
-        LayerService.getLayers(this.worldName)
-            .then(layers => this.updateLayers(layers))
-            .catch(error => console.log(error.response));
+    getAllLayersData = (): void  => {
+        console.log("World Home Page: getAllLayersData...");
+        LayerService.getAllLayersData(this.worldName)
+            .then(layers => this.updateLayers(layers || []))
+            .catch(error => this.updateLayers([]));
     };
 
     // GET: get the layer's Meta DATA (by demand - On Layer Select)
@@ -139,7 +133,7 @@ class WorldHomePage extends React.Component {
     };
 
     updateLayers = (layers: IWorldLayer[]) => {
-        console.log("Layer Data Table: updateLayers...");
+        console.log("World Home Page: updateLayers...");
         const name = this.worldName;
         this.props.updateWorld({ name, layers });
         this.setToInitState();
@@ -182,86 +176,12 @@ class WorldHomePage extends React.Component {
             .catch(error => console.log(error.response));
     };
 
-    /*
-    // ADD New layer
-    addNew = () => {
-        this.newLayer = true;
-        this.zeroSelectedLayer();
-        this.setState({
-            displayDialog: true
-        });
-    };*/
-
     render() {
-        const header = <div className="ui-helper-clearfix" style={{ lineHeight: '1.87em' }}>The Layers List </div>;
-        const uploader =
-            <div className="ui-fileupload" style={{ width: '100%'}}>
-                <UploadFile worldName={ this.props.world.name }
-                            onProgress={(e:any) => <ProgressBar value={this.state.value1} showValue={this.state.displayProgressBar} />}
-                            onUpload={(e:any) => {
-                                this.setState({ displayProgressBar: false});
-                                this.getLayers();
-                            }}/>
-            </div>;
-
-        const dialogFooter =
-            <div className="ui-dialog-buttonpane ui-helper-clearfix">
-                <Button icon="fa-close" label="Delete" onClick={this.delete}/>
-                <Button label="Save" icon="fa-check" onClick={this.save}/>
-            </div>;
 
         return (
             <div>
-
                 <div className="content-section implementation">
-                    <DataTable value={this.props.world.layers} paginator={true} rows={15} header={header} footer={uploader}
-                               selectionMode="single" selection={this.selectedLayer}
-                               onSelectionChange={ (e: any) => this.selectedLayer = e.data}
-                               onRowSelect={this.onLayerSelect}>
-                        <Column field="name" header="Name" sortable={true}/>
-                        <Column field="layer.type" header="Type" sortable={true}/>
-                    </DataTable>
-
-                    <Dialog visible={this.state.displayDialog} header="Layer's Details" modal={true} footer={dialogFooter} onHide={() => this.setState({displayDialog: false})}>
-                        {this.selectedLayer && <div className="ui-grid ui-grid-responsive ui-fluid">
-                            <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="id">ID</label></div>
-                                <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="id" value={this.selectedLayer.layer.id} readOnly={true}/>
-                                </div>
-                            </div>
-                            <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="name">Name</label></div>
-                                <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="name" onChange={(e: any) => {this.updateProperty('name', e.target.value)}} value={this.selectedLayer.name}/>
-                                </div>
-                            </div>
-                            <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="type">Type</label></div>
-                                <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <Dropdown  id="type"  value={this.selectedLayer.layer.type} options={this.layerSelectTypes}
-                                               onChange={(e: any) => {this.updateProperty('layer.type', e.value)}} style={{width:'150px'}} placeholder="Select a Type"/>
-                                </div>
-                            </div>
-                            <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="srs">Projection</label></div>
-                                <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="srs" value={this.selectedLayerType.srs} readOnly={true}/>
-                                </div>
-                            </div>
-                            <div className="ui-grid-row">
-                                <div className="ui-grid-col-4" style={{padding:'4px 10px'}}><label htmlFor="id">Bounding Box</label></div>
-                                <div className="ui-grid-col-8" style={{padding:'4px 10px'}}>
-                                    <InputText id="nativeBoundingBoxminX" value={this.selectedLayerType.nativeBoundingBox.minx} readOnly={true}/>
-                                    <InputText id="nativeBoundingBoxminX" value={this.selectedLayerType.nativeBoundingBox.maxx} readOnly={true}/>
-                                    <InputText id="nativeBoundingBoxmaxY" value={this.selectedLayerType.nativeBoundingBox.miny} readOnly={true}/>
-                                    <InputText id="nativeBoundingBoxminY" value={this.selectedLayerType.nativeBoundingBox.maxy} readOnly={true}/>
-                                </div>
-                            </div>
-
-                        </div>}
-                    </Dialog>
-
+                    <LayersDataTable worldName={ this.props.world.name } updateWorld={this.props.updateWorld}/>
                 </div>
             </div>
         );
@@ -279,8 +199,3 @@ const mapDispatchToProps = (dispatch: any) => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WorldHomePage);
-
-// const footer = <div className="ui-helper-clearfix" style={{ width: '100%' }}>
-//      <Button style={{ float: 'left' }} icon="fa-plus" label="Add" onClick={this.addNew}/>
-// </div>
-// onSelectionChange={ (e: any) => this.selectedLayer = e.data}

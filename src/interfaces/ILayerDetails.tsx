@@ -1,10 +1,4 @@
-import { IVector } from "./IVector";
-import { IRaster } from "./IRaster";
-
-export interface ILayerDetails {
-    coverage?: IRaster,
-    featureType?: IVector
-}
+// shared Raster and Vector Interfaces
 
 export interface INameSpace {
     name: string,
@@ -32,8 +26,8 @@ export interface ILatLonBoundingBox {
 }
 
 export interface ICrs {
-    class?: string,
-    $: string
+    class: string,
+    value: string
 }
 
 export interface IMetaData {
@@ -42,10 +36,10 @@ export interface IMetaData {
 
 export interface IEntry {
     key: string,
-    $: any
+    value: any
 }
 
-export interface IStore {
+export interface ILayerStore {
     class: string,
     name: string
     href: string
