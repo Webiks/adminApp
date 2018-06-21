@@ -3,6 +3,7 @@ import './App.css';
 import { Route, Switch } from 'react-router';
 import World from './components/World/World';
 import Worlds from './components/Worlds/Worlds';
+import Layer from './components/Layer';
 
 const App = () => (
 
@@ -13,8 +14,8 @@ const App = () => (
             </header>
             <Switch>
                 <Route exact={true} path="/" component={Worlds}/>
-                <Route path="/:worldId" component={World}/>
-                {/*<Route path="/:worldId/:layerId" component={LayerDetailsForm}/>*/}
+                <Route exact={true} path="/:worldId" component={World}/>
+                <Route path="/:worldId/:layerId" component={Layer}/>
             </Switch>
 
         </div>

@@ -13,24 +13,10 @@ export class LayerService {
     static getAllLayersData(worldName: string): Promise<any> {
         console.log("start the getAllLayersData service...");
             // A. get an Array of all the world's layers
-        return this.getLayers(worldName)
-            // B. get the data of each layer:
+        return this.getWorldLayers(worldName)
+            // B. get all the data of each layer:
             .then(data =>
-                                // 1. get the layer type & resource info
-                Promise.all(data.map((worldLayer: any) =>
-                                this.getLayerInfo(worldName, worldLayer)
-                                // 2. get the layer's details data according to the layer's type
-                                .then( layerInfo => {
-                                    console.log("CALL the GET LAYER INFO service...");
-                                    return this.getLayerDetails(worldName, layerInfo)
-                                })
-                                // 3. get the layer's store data according to the layer's type
-                                .then( layerData => {
-                                    console.log("CALL the GET STORE DATA service...");
-                                    return this.getStoreData(worldName, layerData)
-                                })
-                            )
-                )
+                Promise.all(data.map((worldLayer: any) => this.getLayerByName(worldName, worldLayer.name)))
             )
             .catch(error => {
                 console.error("getAllLayersData ERROR!" + error.message);
@@ -39,7 +25,7 @@ export class LayerService {
     }
 
     // A. get all layers of the world (including the ILayer's fields)
-    static getLayers(worldName: string): Promise<any> {
+    static getWorldLayers(worldName: string): Promise<any> {
         console.log("start the GET LAYERS service...");
         console.log("parameters: world name = " + worldName);
         return axios
@@ -54,13 +40,34 @@ export class LayerService {
             });
     }
 
-    // B1. get the layer type & resource info
-    static getLayerInfo(worldName: string, layer: IWorldLayer): Promise<any> {
+    // B. get all layer's Data by name
+    static getLayerByName (worldName: string, layerName: string): Promise<any> {
+        console.log("start the GET LAYER service...");
+        // 1. get the layer type & resource info
+        return this.getLayerInfo(worldName, layerName)
+            // 2. get the layer's details data according to the layer's type
+            .then( layerInfo => {
+                console.log("CALL the GET LAYER INFO service...");
+                return this.getLayerDetails(worldName, layerInfo)
+            })
+            // 3. get the layer's store data according to the layer's type
+            .then( layerData => {
+                console.log("CALL the GET STORE DATA service...");
+                return this.getStoreData(worldName, layerData)
+            })
+            .catch(error => {
+                console.error("getLayer ERROR!" + error.message);
+                throw new Error(error)
+            });
+    };
+
+    // 1. get the layer type & resource info
+    static getLayerInfo(worldName: string, layerName: string): Promise<any> {
         console.log("start the GET LAYER INFO service...");
-        console.log("parameters: world name = " + worldName + ", layer = " + JSON.stringify(layer));
-        console.log("url: " + JSON.stringify(`${this.baseUrl}${worldName}/${layer.name}`));
+        console.log("parameters: world name = " + worldName + ", layer name = " + layerName);
+        console.log("url: " + JSON.stringify(`${this.baseUrl}${worldName}/${layerName}`));
         return axios
-            .get(`${this.baseUrl}${worldName}/${layer.name}`)
+            .get(`${this.baseUrl}${worldName}/${layerName}`)
             .then(layerInfo => layerInfo.data)
             .catch(error => {
                 console.error("getLayerInfo ERROR!" + error.message);
@@ -68,7 +75,7 @@ export class LayerService {
             });
     }
 
-    // B2. get layer's details ("data" field - type IRaster or IVector)
+    // 2. get layer's details ("data" field - type IRaster or IVector)
     static getLayerDetails(worldName: string, layer: IWorldLayer): Promise<any> {
         console.log("start the GET LAYER DETAILS service...");
         console.log("parameters: world name = " + worldName + ", layer = " + JSON.stringify(layer));
@@ -98,7 +105,7 @@ export class LayerService {
             });
     }
 
-    // B3. get the layer's store data (for the format) according to the layer's type and the layer title (in the layer's details)
+    // 3. get the layer's store data (for the format) according to the layer's type and the layer title (in the layer's details)
     static getStoreData(worldName: string, layer: IWorldLayer): Promise<any> {
         console.log("start the GET STORE DATA service...");
         console.log("parameters: world name = " + worldName + ", STORE NAME = " + layer.layer.storeName);
@@ -139,10 +146,14 @@ export class LayerService {
     // ==============
     // DELETE Request
     // ==============
-    // static deleteLayerById(layerId: string): Promise<any> {
-    static deleteLayerById(worldName: string, layer: IWorldLayer): Promise<any> {
-        return axios
-            .delete(`${this.baseUrl}${worldName}:${layer.layer.name}/${layer.layer.type}`)
+    // static deleteLayerById(layerId: string): void {
+    static deleteLayerById(worldName: string, layer: IWorldLayer): void {
+        // 1. delete the layer from the store
+        axios.delete(`${this.baseUrl}${layer.layer.id}`)
+            .then(res => res.data)
+            .catch(error => { throw new Error(error) });
+        // 2. delete the file (raster or vector)
+        axios.delete(`${this.baseUrl}${layer.layer.resource.href}`)
             .then(res => res.data)
             .catch(error => { throw new Error(error) });
     }

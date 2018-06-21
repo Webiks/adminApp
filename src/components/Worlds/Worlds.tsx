@@ -10,7 +10,7 @@ import { WorldsActions } from '../../actions/world.actions';
 
 export interface IPropsWorlds {
     worldsList: IWorld[],
-    setWorlds: (world: IWorld[]) => ITBAction
+    setWorlds: (worlds: IWorld[]) => ITBAction
 }
 
 class Worlds extends React.Component {

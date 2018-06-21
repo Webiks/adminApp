@@ -16,8 +16,9 @@ import { IWorldLayer } from '../interfaces/IWorldLayer';
 
 export interface IPropsLayer {
     layer: IWorldLayer,
+    worldName: string,
     world: IWorld,
-    updateWorld: (worlds: Partial<IWorld>) => ITBAction
+    updateWorld: (worlds: Partial<IWorld>) => ITBAction,
     updateLayers: (layers: IWorldLayer[]) => void
 }
 
@@ -25,11 +26,9 @@ class LayerDetailsForm extends React.Component {
 
     props: IPropsLayer;
     newLayer: boolean;
-    worldName: string;
     layer: any;
 
     componentDidMount() {
-        this.worldName = this.props.world.name;
         this.layer = this.props.layer;
     };
 
@@ -60,6 +59,13 @@ class LayerDetailsForm extends React.Component {
         const layer = this.props.layer;
         layer[property] = value;
         this.update(layer);
+    };
+
+    // update the store and refresh the page
+    refresh = (layers: IWorldLayer[]) => {
+        console.log("World Home Page: updateLayers...");
+        const name = this.props.worldName;
+        this.props.updateWorld({ name, layers });
     };
 
     cancel = () => {
@@ -124,13 +130,13 @@ class LayerDetailsForm extends React.Component {
 
         )
 
-
     }
 }
 
 const mapStateToProps = (state: IState, { worldName }: any) => {
     return {
-        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name)
+        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name),
+        worldName
     }
 };
 

@@ -15,52 +15,33 @@ import { LayerService } from '../services/LayerService';
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
-import { ProgressBar } from 'primereact/components/progressbar/ProgressBar';
-
-export interface IStateProgress {
-    displayProgressBar: boolean,
-    value1: number
-}
 
 class UploadFile extends React.Component {
     props: IPropsLayers;
-    state: IStateProgress = {
-        displayProgressBar: false,
-        value1: 0
-    };
-    worldName: string;
-    layers: IWorldLayer[];
     url: string;
 
     componentDidMount() {
-        this.worldName = this.props.world.name;
-        this.layers = this.props.world.layers;
-        this.url = `${config.baseUrlApi}/upload/${this.worldName}`;
+        this.url = `${config.baseUrlApi}/upload/${this.props.worldName}`;
+        console.error("UPLOAD - url: " + this.url);
     };
 
     // get all the world's layer again after adding the new layer
-    onUpload = (e: any) => {
+    onUpload = () => {
         console.log("On Upload...");
-        e.preventDefault();
-        this.setState({
-            displayProgressBar: false,
-            value1: 0
-        });
-        // get all the layers again, after loading the new layer to geoserver
-        LayerService.getAllLayersData(this.props.world.name)
+        // update the layers' list
+        LayerService.getAllLayersData(this.props.worldName)
             .then(layers => this.updateLayers(layers))
             .catch(error => console.log(error.response));
     };
 
-    onError = (e: any) => {
-        console.log("error: " + e.data);
-    };
-
     updateLayers = (layers: IWorldLayer[]) => {
         console.log("upload: updateLayers...");
-        const name = this.worldName;
+        const name = this.props.worldName;
         this.props.updateWorld({ name, layers });
-        this.setState({ displayProgressBar: false});
+    };
+
+    onError = (e: any) => {
+        console.log("error: " + e.data);
     };
 
     render() {
@@ -69,10 +50,9 @@ class UploadFile extends React.Component {
                 <div className="content-section implementation">
                     <FileUpload mode="advanced" name="uploads" multiple={true} url={this.url}
                                 accept="image/tiff, .shp,.shx, .dbf,.prj, .qix, .xml, .sbn, .sbx, .zip"
-                                maxFileSize={config.maxFileSize} auto={true}
+                                maxFileSize={config.maxFileSize} auto={false}
                                 chooseLabel="add"
-                                onProgress={(e:any) => <ProgressBar value={this.state.value1} showValue={this.state.displayProgressBar} />}
-                                onUpload={this.onUpload}/>
+                                onUpload={(e: any) => this.onUpload}/>
                 </div>
             </div>
         )
@@ -81,7 +61,8 @@ class UploadFile extends React.Component {
 
 const mapStateToProps = (state: IState, { worldName }: any) => {
     return {
-        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name)
+        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name),
+        worldName
     }
 };
 

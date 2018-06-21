@@ -3,8 +3,9 @@ import { IWorld } from '../../interfaces/IWorld';
 import { connect } from 'react-redux';
 import { IState } from '../../store';
 import { WorldsActions } from '../../actions/world.actions';
-import { IPropsLayers } from '../../interfaces/IPropsLayers';
-import Footer from './Footer';
+import { IWorldLayer } from '../../interfaces/IWorldLayer';
+import UploadFile from '../UploadFile';
+import { push } from 'react-router-redux';
 import Header from './Header';
 
 /* Prime React components */
@@ -14,8 +15,15 @@ import 'font-awesome/css/font-awesome.css';
 import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { Button } from 'primereact/components/button/Button';
-import { IWorldLayer } from '../../interfaces/IWorldLayer';
-import UploadFile from '../UploadFile';
+import { ITBAction } from '../../consts/action-types';
+import { LayerService } from '../../services/LayerService';
+
+export interface IPropsLayers {
+    worldName: string,
+    world: IWorld,
+    updateWorld: (worlds: IWorld) => ITBAction,
+    navigateTo: (layerName: string) => void
+}
 
 export interface IStateTable {
     selectedLayer: any
@@ -35,6 +43,7 @@ class LayersDataTable extends React.Component {
 
     editLayer = (layer: IWorldLayer) => {
         console.log(`navigate to layer:${layer.name} form page`);
+        this.props.navigateTo(`${this.props.worldName}/${layer.name}`);
     };
 
     deleteLayer = (layer: IWorldLayer) => {
@@ -42,23 +51,51 @@ class LayersDataTable extends React.Component {
         confirm(`Are sure you want to DELETE ${layer.name}?`);
     };
 
-    actionTemplate(rowData: any, column: any) {
+    // DELETE
+    /*
+    delete = () => {
+        LayerService.deleteLayerById(this.worldName, this.selectedLayer)
+        // LayerService.deleteLayerById(this.worldName, this.state.layer.name)
+            .then (res => {
+                if (res !== 'error'){
+                    const layers = this.props.world.layers.filter((layer: IWorldLayer) =>
+                        layer.layer.name !== this.selectedLayer.name);
+                    this.updateLayers(layers);
+                    this.setToInitState();
+                }
+                else{
+                    console.error("error: " + res.message);
+                }
+            })
+            .catch(error => console.log(error.response));
+    };*/
+
+    // update the store and refresh the page
+    refresh = (layers: IWorldLayer[]) => {
+        console.log("World Home Page: updateLayers...");
+        const name = this.props.worldName;
+        this.props.updateWorld({ name, layers });
+    };
+
+    actionTemplate = (rowData: any, column: any) => {
         return (
             <div className="ui-button-icon ui-helper-clearfix">
-                <Button type="button" icon="fa-search" className="ui-button-success" onClick={(e: any) => this.viewLayer(this.state.selectedLayer)}/>
-                <Button type="button" icon="fa-edit" className="ui-button-warning" onClick={(e: any) => this.editLayer(this.state.selectedLayer)}/>
-                <Button type="button" icon="fa-close" onClick={(e: any) => this.deleteLayer(this.state.selectedLayer)}/>
+                <Button type="button" icon="fa-search" className="ui-button-success"
+                        onClick={() => this.viewLayer(rowData.layer)}/>
+                <Button type="button" icon="fa-edit" className="ui-button-warning"
+                        onClick={() => this.editLayer(rowData.layer) }/>
+                <Button type="button" icon="fa-close"
+                        onClick={() => this.deleteLayer(rowData.layer)}/>
             </div>
         );
-    }
+    };
 
     render(){
-
         return  (
             <DataTable  value={this.props.world.layers} paginator={true} rows={10} responsive={false}
-                        resizableColumns={true} autoLayout={true}
-                        header={<Header tableTitle={`${this.props.world.name} World's Files List`}/>}
-                        footer={<UploadFile worldName={this.props.world.name} />}
+                        resizableColumns={true} autoLayout={true} style={{margin:'4px 10px'}}
+                        header={<Header worldName={this.props.worldName} tableType={`layers`}/>}
+                        footer={<UploadFile worldName={this.props.worldName} />}
                         selectionMode="single" selection={this.state.selectedLayer}
                         onSelectionChange={(e: any)=>{this.setState({selectedLayer: e.data});}}>
                     <Column field="layer.name" header="Name" sortable={true}/>
@@ -67,22 +104,22 @@ class LayersDataTable extends React.Component {
                     <Column field="layer.fileExtension" header="Extension" sortable={true}/>
                     <Column field="''"  header="Date Created" sortable={true}/>
                     <Column field="''" header="Date Modified" sortable={true}/>
-                    <Column field="''" header="Affiliation" sortable={false}/>
                     <Column header="Actions" body={this.actionTemplate} style={{textAlign:'center', width: '6em'}}/>
             </DataTable>
         );
     }
-
 }
 
 const mapStateToProps = (state: IState, { worldName }: any) => {
     return {
-        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name)
+        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name),
+        worldName
     }
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
-    updateWorld: (payload: IWorld) => dispatch(WorldsActions.updateWorldAction(payload))
+    updateWorld: (payload: IWorld) => dispatch(WorldsActions.updateWorldAction(payload)),
+    navigateTo: (location: string) => dispatch(push(location))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LayersDataTable);
