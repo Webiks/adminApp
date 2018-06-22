@@ -35,7 +35,7 @@ class WorldHomePage extends React.Component {
             .catch(error => this.refresh([]));
     };
 
-    // update the store and refresh the page
+    // update the App store and refresh the page
     refresh = (layers: IWorldLayer[]) => {
         console.log("World Home Page: updateLayers...");
         const name = this.props.worldName;

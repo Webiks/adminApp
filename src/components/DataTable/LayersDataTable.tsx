@@ -17,6 +17,7 @@ import { Column } from 'primereact/components/column/Column';
 import { Button } from 'primereact/components/button/Button';
 import { ITBAction } from '../../consts/action-types';
 import { LayerService } from '../../services/LayerService';
+import { ILayer } from '../../interfaces/ILayer';
 
 export interface IPropsLayers {
     worldName: string,
@@ -46,9 +47,25 @@ class LayersDataTable extends React.Component {
         this.props.navigateTo(`${this.props.worldName}/${layer.name}`);
     };
 
-    deleteLayer = (layer: IWorldLayer) => {
-        console.log("start delete layer: " + layer.name);
+    deleteLayer = (layer: ILayer) => {
+        console.error("start delete layer: " + layer.name);
         confirm(`Are sure you want to DELETE ${layer.name}?`);
+        LayerService.deleteLayerById(this.props.worldName, layer)
+            .then(layers => {
+                console.error("LAYER DATA TABLE: delete layer - getAllLayersData...");
+                // get the new layers' list
+                LayerService.getAllLayersData(this.props.worldName)
+                    .then(layers => this.refresh(layers || []))
+                    .catch(error => this.refresh([]));
+            })
+            .catch(error => this.refresh([]));
+    };
+
+    // update the App store and refresh the page
+    refresh = (layers: IWorldLayer[]) => {
+        console.log("Layer Data Table: updateLayers...");
+        const name = this.props.worldName;
+        this.props.updateWorld({ name, layers });
     };
 
     // DELETE
@@ -69,13 +86,6 @@ class LayersDataTable extends React.Component {
             })
             .catch(error => console.log(error.response));
     };*/
-
-    // update the store and refresh the page
-    refresh = (layers: IWorldLayer[]) => {
-        console.log("World Home Page: updateLayers...");
-        const name = this.props.worldName;
-        this.props.updateWorld({ name, layers });
-    };
 
     actionTemplate = (rowData: any, column: any) => {
         return (

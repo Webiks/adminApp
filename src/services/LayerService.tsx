@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from "../config/config";
 import { IWorldLayer } from "../interfaces/IWorldLayer";
+import { ILayer } from '../interfaces/ILayer';
 
 export class LayerService {
 
@@ -42,17 +43,17 @@ export class LayerService {
 
     // B. get all layer's Data by name
     static getLayerByName (worldName: string, layerName: string): Promise<any> {
-        console.log("start the GET LAYER service...");
+        console.log("start the GET LAYER service for layer: " + layerName);
         // 1. get the layer type & resource info
         return this.getLayerInfo(worldName, layerName)
             // 2. get the layer's details data according to the layer's type
             .then( layerInfo => {
-                console.log("CALL the GET LAYER INFO service...");
+                console.log("CALL the GET LAYER INFO service...layerInfo: " + layerInfo);
                 return this.getLayerDetails(worldName, layerInfo)
             })
             // 3. get the layer's store data according to the layer's type
             .then( layerData => {
-                console.log("CALL the GET STORE DATA service...");
+                console.log("CALL the GET STORE DATA service... layerData: " + layerData);
                 return this.getStoreData(worldName, layerData)
             })
             .catch(error => {
@@ -146,14 +147,45 @@ export class LayerService {
     // ==============
     // DELETE Request
     // ==============
-    // static deleteLayerById(layerId: string): void {
-    static deleteLayerById(worldName: string, layer: IWorldLayer): void {
-        // 1. delete the layer from the store
-        axios.delete(`${this.baseUrl}${layer.layer.id}`)
+    // delete layer from geoserver
+    static deleteLayerById(worldName: string, layer: ILayer): Promise<any> {
+        console.log("start the DELETE LAYER service for layer: " + layer.id);
+        // 1. delete the layer from the layers' list
+        return this.deleteLayer(layer.id)
+        // 2. delete the layer from the store - using the resource url (raster or vector)
+            .then( response => {
+                console.log("DELETE LAYER from store response: " + response);
+                return this.deleteLayerFromStroe(worldName, layer.name);
+            })
+            // 3. delete the store
+            .then( response => {
+                console.log("DELETE STORE response: " + response);
+                return this.deleteStroe(worldName, layer.storeName, layer.type);
+            })
+            .catch(error => {
+                console.error("deleteLayer ERROR!" + error.message);
+                throw new Error(error)
+            });
+    }
+
+
+    // 1. delete the layer from the layers' list
+    static deleteLayer(layerId: string): Promise<any> {
+        return axios.delete(`${this.baseUrl}${layerId}`)
             .then(res => res.data)
             .catch(error => { throw new Error(error) });
-        // 2. delete the file (raster or vector)
-        axios.delete(`${this.baseUrl}${layer.layer.resource.href}`)
+    }
+
+    // 2. delete the layer from the store by using the resource url (raster or vector)
+    static deleteLayerFromStroe(worldName: string, layerName: string): Promise<any> {
+        return axios.delete(`${this.baseUrl}${worldName}/${layerName}`)
+            .then(res => res.data)
+            .catch(error => { throw new Error(error) });
+    }
+
+    // 3. delete the layer from the store by using the resource url (raster or vector)
+    static deleteStroe(worldName: string, storeName: string, storeType: string): Promise<any> {
+        return axios.delete(`${this.baseUrl}${worldName}/${storeName}/${storeType}`)
             .then(res => res.data)
             .catch(error => { throw new Error(error) });
     }
