@@ -15,63 +15,104 @@ export interface ILayerComponentProps  {
     setWorlds: (worlds: IWorld[]) => ITBAction,
     updateWorld: (worlds: Partial<IWorld>) => ITBAction,
     match: any,
-    worlds?: IWorld[],
-    world: IWorld
+    worlds: IWorld[]
 }
 
 export interface ILayerComponentState {
-    world?: IWorld,
-    layer?: IWorldLayer
+    selectedLayer?: IWorldLayer
 }
 
 export class Layer extends React.Component {
     props: ILayerComponentProps;
-    state: ILayerComponentState = {};
     worldName: string;
     layerName: string;
+    selectedWorld: IWorld;
+    state: ILayerComponentState = {};
 
     componentDidMount() {
-        console.log("start the Layer Component... " + this.props.match.params.worldId);
         this.worldName = this.props.match.params.worldId;
         this.layerName = this.props.match.params.layerId;
-        // get all world's layers - in case the state layer list is empty
-        if (!(this.props.world)){
-            this.getLayerList();
+        // 1. get all worlds - in case the state world list is empty
+        if ((this.props.worlds).length === 0){
+            this.getWorldList()
+                .then( worlds => this.getInfo(worlds))
+                .catch ( error => console.error("LAYER: no such world! " + error));
         }
         else {
-            this.findSelectedLayer();
+            this.getInfo(this.props.worlds);
+        }
+    };
+
+    // get all the info
+    getInfo = (worlds) => {
+        // 2. check if the world exist in the worlds list
+        this.selectedWorld = this.findSelectedWorld(worlds);
+        // 3. get all the layers of the world - in case the layers list is empty
+        if ((this.selectedWorld.layers).length === 0){
+            this.getLayerList()
+            .then( layers => {
+                // 4. check if the layer exist in the world layers list
+                this.selectedWorld.layers = layers;
+                const selectedLayer = this.findSelectedLayer(layers);
+                this.setState( { selectedLayer });
+            })
+            .catch ( error => console.error("LAYER: no such layer! " + error));
+        }
+        else{
+            // 4. check if the layer exist in the world layers list
+            const selectedLayer = this.findSelectedLayer(this.selectedWorld.layers);
+            this.setState( { selectedLayer });
         }
     };
 
     // get the world's list
-    getLayerList = () => {
-        console.log("start to get all worlds...");
-        LayerService.getAllLayersData(this.worldName)
+    getWorldList = (): Promise<any>  => {
+        console.log("LAYER: start to get all worlds...");
+        return WorldService.getWorlds()
             .then((worlds: IWorld[]) => {
                 this.props.setWorlds(worlds || []);
-                this.findSelectedLayer();
+                return worlds;
             })
-            .catch(error => this.props.setWorlds([]));
+            .catch(error => {
+                const worlds = [];
+                this.props.setWorlds(worlds);
+                return worlds;
+            });
     };
 
-    // find and define the selected layer
-    findSelectedLayer = () => {
-        const selectedLayer = this.props.world.layers.find(({ name }: IWorldLayer) => this.layerName === name);
-        this.setState( { layer : selectedLayer });
-        console.log("Layer Component - layer: " + JSON.stringify(this.state.layer));
+    // get the layer's list
+    getLayerList = (): Promise<any> => {
+        const name = this.worldName;
+        return LayerService.getAllLayersData(this.worldName)
+            .then((layers: IWorldLayer[]) => {
+                this.props.updateWorld({ name, layers });
+                return layers;
+            })
+            .catch(error => {
+                const layers = [];
+                this.props.updateWorld({ name, layers });
+                return layers;
+            });
     };
+
+    // find the selected world
+    findSelectedWorld = (worlds): any => this.props.worlds.find(({ name }: IWorld) => name === this.worldName);
+
+    // find the selected layer
+    findSelectedLayer = (layers): any =>
+        this.selectedWorld.layers.find((layer: IWorldLayer) => layer.layer.name === this.layerName);
 
     render() {
         return <div>
             <h1>
-                {this.state.world ? `${this.state.world.name} World` :
+                {this.state.selectedLayer ? `Layer '${this.props.match.params.layerId}' in '${this.props.match.params.worldId}' world` :
                     <div>
                         <span style={{ color: 'gold' }}> ⚠ </span>
-                        <span>World {this.props.match.params.worldId} doesn't exist!</span>
+                        <span>Layer '{this.props.match.params.layerId}' doesn't exist in '{this.props.match.params.worldId}' world!</span>
                     </div>}
             </h1>
 
-            { this.state.world && <LayerDetailsForm worldName={this.state.world.name}/> }
+            { this.state.selectedLayer && <LayerDetailsForm worldName={this.worldName} layerName={this.layerName}/> }
 
             <button onClick={this.props.backToWorlds}>Back to worlds</button>
 
@@ -79,9 +120,9 @@ export class Layer extends React.Component {
     }
 }
 
-const mapStateToProps = (state: IState, { worldName }: any) => {
+const mapStateToProps = (state: IState) => {
     return {
-        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name)
+        worlds: state.worlds.list
     }
 };
 

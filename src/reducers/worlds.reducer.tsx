@@ -21,10 +21,8 @@ const reducer = (state: IWorldsState = initialState, action: ITBAction) => {
                 if (world.name === action.payload.name) {
                     return { ...world, ...action.payload }
                 }
-                console.log("World Reducer: updateWorld - new state = " + JSON.stringify(world));
                 return world;
             });
-            console.log("World Reducer: updateWorld - new state = " + JSON.stringify({ ...state, list }));
             return { ...state, list };
         }
 
