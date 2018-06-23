@@ -8,6 +8,7 @@
     "classnames": "^2.2.5",
     "font-awesome": "^4.7.0",
     "history": "^4.7.2",
+    "openlayers": "^4.6.5",
     "primereact": "^1.5.3",
     "prop-types-ts": "^0.6.0",
     "react": "^16.3.2",

@@ -5,7 +5,7 @@ import { ILayer } from '../interfaces/ILayer';
 
 export class LayerService {
 
-    static baseUrl: string = `${config.baseUrlApi}/layers/`;
+    static baseUrl: string = `${config.baseUrlApi}/layers`;
 
     // ==============
     //  GET Requests
@@ -30,7 +30,7 @@ export class LayerService {
         console.log("start the GET LAYERS service...");
         console.log("parameters: world name = " + worldName);
         return axios
-            .get(`${this.baseUrl}${worldName}`)
+            .get(`${this.baseUrl}/${worldName}`)
             .then(layers => {
                 console.log("GET LAYERS: " + JSON.stringify(layers.data.layers.layer));
                 return layers.data.layers.layer;
@@ -68,7 +68,7 @@ export class LayerService {
         console.log("parameters: world name = " + worldName + ", layer name = " + layerName);
         console.log("url: " + JSON.stringify(`${this.baseUrl}${worldName}/${layerName}`));
         return axios
-            .get(`${this.baseUrl}${worldName}/${layerName}`)
+            .get(`${this.baseUrl}/layer/${worldName}/${layerName}`)
             .then(layerInfo => layerInfo.data)
             .catch(error => {
                 console.error("getLayerInfo ERROR!" + error.message);
@@ -82,7 +82,7 @@ export class LayerService {
         console.log("parameters: world name = " + worldName + ", layer = " + JSON.stringify(layer));
         console.log("url: " + JSON.stringify(`${this.baseUrl}${worldName}/${layer.layer.name}/details`));
         return axios
-            .get(`${this.baseUrl}${worldName}/${layer.layer.name}/details`)
+            .get(`${this.baseUrl}/details/${worldName}/${layer.layer.name}`)
             .then(layerDetails => {
                 console.log("GET LAYER DETAILS response: " + JSON.stringify(layerDetails.data));
                 // get the layer details data according to the layer's type
@@ -112,7 +112,7 @@ export class LayerService {
         console.log("parameters: world name = " + worldName + ", STORE NAME = " + layer.layer.storeName);
         console.log("url: " + JSON.stringify(`${this.baseUrl}${worldName}/${layer.layer.storeName}/${layer.layer.type}`));
         return axios
-            .get(`${this.baseUrl}${worldName}/${layer.layer.storeName}/${layer.layer.type}`)
+            .get(`${this.baseUrl}/store/${worldName}/${layer.layer.storeName}/${layer.layer.type}`)
             .then(store => {
                 // get the store data according to the layer's type
                 console.log("GET STORE DATA response: " + JSON.stringify(store.data));
@@ -144,6 +144,18 @@ export class LayerService {
             });
     }
 
+    // get Capabilities
+    static getCapabilities (worldName: string, layerName: string): Promise<any> {
+        console.log("start the GET CAPABILITIES service...");
+        console.log("parameters: world name = " + worldName + ", layer name = " + layerName);
+        return axios
+            .get(`${this.baseUrl}/wmts/${worldName}/${layerName}`)
+            .then(xml => xml.data )
+            .catch(error => { throw new Error(error) });
+    }
+
+// return convert.xmlDataToJSON(xml.data);
+
     // ==============
     // DELETE Request
     // ==============
@@ -171,21 +183,21 @@ export class LayerService {
 
     // 1. delete the layer from the layers' list
     static deleteLayer(layerId: string): Promise<any> {
-        return axios.delete(`${this.baseUrl}${layerId}`)
+        return axios.delete(`${this.baseUrl}/${layerId}`)
             .then(res => res.data)
             .catch(error => { throw new Error(error) });
     }
 
     // 2. delete the layer from the store by using the resource url (raster or vector)
     static deleteLayerFromStroe(worldName: string, layerName: string): Promise<any> {
-        return axios.delete(`${this.baseUrl}${worldName}/${layerName}`)
+        return axios.delete(`${this.baseUrl}/${worldName}/${layerName}`)
             .then(res => res.data)
             .catch(error => { throw new Error(error) });
     }
 
     // 3. delete the layer from the store by using the resource url (raster or vector)
     static deleteStroe(worldName: string, storeName: string, storeType: string): Promise<any> {
-        return axios.delete(`${this.baseUrl}${worldName}/${storeName}/${storeType}`)
+        return axios.delete(`${this.baseUrl}/store/${worldName}/${storeName}/${storeType}`)
             .then(res => res.data)
             .catch(error => { throw new Error(error) });
     }

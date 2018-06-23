@@ -9,7 +9,6 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'font-awesome/css/font-awesome.css';
 import { Button } from 'primereact/components/button/Button';
 import { InputText } from 'primereact/components/inputtext/InputText';
-import { Dropdown } from 'primereact/components/dropdown/Dropdown';
 import { WorldsActions } from '../actions/world.actions';
 import { ITBAction } from '../consts/action-types';
 import { IWorldLayer } from '../interfaces/IWorldLayer';
@@ -73,8 +72,6 @@ class LayerDetailsForm extends React.Component {
     };
 
     render(){
-
-
         const dialogFooter =
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
                 <Button label="Save" icon="fa-check" onClick={this.save}/>
@@ -127,9 +124,7 @@ class LayerDetailsForm extends React.Component {
 
                 </div>
             </form>
-
         )
-
     }
 }
 

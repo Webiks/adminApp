@@ -1,12 +1,16 @@
 import * as React from 'react';
 import { IWorld } from '../../interfaces/IWorld';
 import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
 import { IState } from '../../store';
 import { WorldsActions } from '../../actions/world.actions';
 import { IWorldLayer } from '../../interfaces/IWorldLayer';
+import { ITBAction } from '../../consts/action-types';
+import { LayerService } from '../../services/LayerService';
+import { ILayer } from '../../interfaces/ILayer';
 import UploadFile from '../UploadFile';
-import { push } from 'react-router-redux';
 import Header from './Header';
+import ol from 'openlayers'
 
 /* Prime React components */
 import 'primereact/resources/primereact.min.css';
@@ -15,9 +19,8 @@ import 'font-awesome/css/font-awesome.css';
 import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { Button } from 'primereact/components/button/Button';
-import { ITBAction } from '../../consts/action-types';
-import { LayerService } from '../../services/LayerService';
-import { ILayer } from '../../interfaces/ILayer';
+import { Dialog } from 'primereact/components/dialog/Dialog';
+import Footer from './Footer';
 
 export interface IPropsLayers {
     worldName: string,
@@ -27,7 +30,9 @@ export interface IPropsLayers {
 }
 
 export interface IStateTable {
-    selectedLayer: any
+    selectedLayer: any,
+    displayDialog: boolean,
+    displayFooter: boolean
 }
 
 class LayersDataTable extends React.Component {
@@ -35,16 +40,63 @@ class LayersDataTable extends React.Component {
     props: IPropsLayers;
 
     state: IStateTable = {
-        selectedLayer: this.props.world.layers[0]
+        selectedLayer: this.props.world.layers[0],
+        displayDialog: false,
+        displayFooter: true
     };
 
-    viewLayer = (layer: IWorldLayer) => {
-        console.log("start view layer: " + layer.name);
+    displayLayer = (layer: IWorldLayer) => {
+        const center = [layer.data.latLonBoundingBox.minx,layer.data.latLonBoundingBox.maxy];
+        const parser = new ol.format.WMTSCapabilities();
+        const projection = layer.data.latLonBoundingBox.crs;
+        const olProjection = 'EPSG:3857';
+        let map;
+        // layer.inputData.zoom = 14;
+
+        // get the Capabilities XML file in JSON format
+        // 1. get the Capabilities XML file
+        LayerService.getCapabilities(this.props.worldName, layer.layer.name)
+            .then( xml => {
+                console.log("1. get capabilities XML");
+                // 2. convert the xml data to json
+                const json = parser.read(xml);
+                console.log("2. convert to JSON");
+                // 3. define the map options
+                const options = ol.source.WMTS.optionsFromCapabilities(json,
+                    {
+                        projection: layer.data.srs,
+                        layer: layer.layer.name,
+                        matrixSet: projection
+                    });
+                console.log("3. finished to define the options");
+
+                // draw the map
+                console.error("4. start new OL Map...");
+                map = new ol.Map({
+                    layers: [
+                        new ol.layer.Tile({
+                            source: new ol.source.OSM(),
+                            opacity: 0.7
+                        }),
+                        new ol.layer.Tile({
+                            opacity: 1,
+                            source: new ol.source.WMTS(options)
+                        })
+                    ],
+                    target: 'map',
+                    view: new ol.View({
+                        projection: olProjection,
+                        center: ol.proj.transform(center, projection, olProjection),
+                        zoom: 14
+                    })
+                });
+            })
+            .catch(error => { throw new Error(error) });
     };
 
     editLayer = (layer: IWorldLayer) => {
         console.log(`navigate to layer:${layer.name} form page`);
-        this.props.navigateTo(`${this.props.worldName}/${layer.name}`);
+        this.props.navigateTo(`${this.props.worldName}/${layer.layer.name}`);
     };
 
     deleteLayer = (layer: ILayer) => {
@@ -61,61 +113,73 @@ class LayersDataTable extends React.Component {
             .catch(error => this.refresh([]));
     };
 
+    // set state to initial state
+    setInitState = () =>
+        this.setState({
+                selectedLayer: null,
+                displayDialog: false,
+                displayFooter: true
+        });
+
     // update the App store and refresh the page
     refresh = (layers: IWorldLayer[]) => {
         console.log("Layer Data Table: updateLayers...");
         const name = this.props.worldName;
         this.props.updateWorld({ name, layers });
+        this.setInitState();
     };
-
-    // DELETE
-    /*
-    delete = () => {
-        LayerService.deleteLayerById(this.worldName, this.selectedLayer)
-        // LayerService.deleteLayerById(this.worldName, this.state.layer.name)
-            .then (res => {
-                if (res !== 'error'){
-                    const layers = this.props.world.layers.filter((layer: IWorldLayer) =>
-                        layer.layer.name !== this.selectedLayer.name);
-                    this.updateLayers(layers);
-                    this.setToInitState();
-                }
-                else{
-                    console.error("error: " + res.message);
-                }
-            })
-            .catch(error => console.log(error.response));
-    };*/
 
     actionTemplate = (rowData: any, column: any) => {
         return (
             <div className="ui-button-icon ui-helper-clearfix">
                 <Button type="button" icon="fa-search" className="ui-button-success"
-                        onClick={() => this.viewLayer(rowData.layer)}/>
+                        onClick={() => {
+                            this.setState({selectedLayer: rowData, displayDialog: true});
+                            this.displayLayer(rowData);
+                        }}/>
                 <Button type="button" icon="fa-edit" className="ui-button-warning"
-                        onClick={() => this.editLayer(rowData.layer) }/>
+                        onClick={() => {
+                            this.setState({selectedLayer: rowData, displayDialog: false});
+                            this.editLayer(rowData)
+                        }}/>
                 <Button type="button" icon="fa-close"
-                        onClick={() => this.deleteLayer(rowData.layer)}/>
+                        onClick={() => {
+                            this.setState({selectedLayer: rowData, displayDialog: false});
+                            this.deleteLayer(rowData.layer)
+                        }}/>
             </div>
         );
     };
 
     render(){
         return  (
-            <DataTable  value={this.props.world.layers} paginator={true} rows={10} responsive={false}
-                        resizableColumns={true} autoLayout={true} style={{margin:'4px 10px'}}
-                        header={<Header worldName={this.props.worldName} tableType={`layers`}/>}
-                        footer={<UploadFile worldName={this.props.worldName} />}
-                        selectionMode="single" selection={this.state.selectedLayer}
-                        onSelectionChange={(e: any)=>{this.setState({selectedLayer: e.data});}}>
-                    <Column field="layer.name" header="Name" sortable={true}/>
-                    <Column field="store.type" header="Type" sortable={true}/>
-                    <Column field="store.format" header="Format" sortable={true}/>
-                    <Column field="layer.fileExtension" header="Extension" sortable={true}/>
-                    <Column field="''"  header="Date Created" sortable={true}/>
-                    <Column field="''" header="Date Modified" sortable={true}/>
-                    <Column header="Actions" body={this.actionTemplate} style={{textAlign:'center', width: '6em'}}/>
-            </DataTable>
+            <div className="content-section implementation">
+                <DataTable  value={this.props.world.layers} paginator={true} rows={10} responsive={false}
+                            resizableColumns={true} autoLayout={true} style={{margin:'4px 10px'}}
+                            header={<Header worldName={this.props.worldName} tableType={`layers`}/>}
+                            footer={<Footer worldName={this.props.worldName} />}
+                            selectionMode="single" selection={this.state.selectedLayer}
+                            onSelectionChange={(e: any)=>{this.setState({selectedLayer: e.data});}}>
+                        <Column field="layer.name" header="Name" sortable={true}/>
+                        <Column field="store.type" header="Type" sortable={true}/>
+                        <Column field="store.format" header="Format" sortable={true}/>
+                        <Column field="layer.fileExtension" header="Extension" sortable={true}/>
+                        <Column field="''"  header="Date Created" sortable={true}/>
+                        <Column field="''" header="Date Modified" sortable={true}/>
+                        <Column header="Actions" body={this.actionTemplate} style={{textAlign:'center', width: '6em'}}/>
+                </DataTable>
+
+                {this.state.selectedLayer && <div>
+                    <Dialog visible={this.state.displayDialog} modal={true}
+                            header={`Layer '${this.state.selectedLayer.layer.name}' map preview`}
+                            onHide={() => this.refresh(this.props.world.layers)}>
+                        <div className="ui-grid ui-grid-responsive ui-fluid">
+                            <div id="map" className="map" style={{height:'400px', width:'100%'}}/>
+                        </div>
+                    </Dialog>
+                </div>}
+
+            </div>
         );
     }
 }
@@ -139,13 +203,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(LayersDataTable);
 // <Column field="imageData.file.dateModified" header="Date Modified" sortable={true}/>
 // <Column field="inputData.affiliation" header="File Affiliation" sortable={false}/>
 
-// <div className="ui-dialog-buttonpane ui-helper-clearfix">
-//                 <Button type="button" icon="fa-search" label="view" className="ui-button-success" onClick={(e: any) => this.viewLayer(this.state.selectedLayer)}/>
-//                 <Button type="button" icon="fa-edit" label="edit" className="ui-button-warning" onClick={(e: any) => this.editLayer(this.state.selectedLayer)}/>
-//                 <Button type="button" icon="fa-close" label="delete" onClick={(e: any) => this.deleteLayer(this.state.selectedLayer)}/>
-//             </div>
 // table-layout="auto"
 // tableStyle="width:auto"
 // tableStyle="table-layout:auto"
 // autoLayout={true}
 // columnResizeMode="expand"
+
+// map.zoomToMaxExtent();
+
+

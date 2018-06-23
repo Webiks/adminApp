@@ -44,7 +44,7 @@ class WorldHomePage extends React.Component {
 
     render() {
         return (
-            <div className="content-section implementation">
+            <div>
                 <LayersDataTable worldName={ this.props.world.name }/>
             </div>
 
