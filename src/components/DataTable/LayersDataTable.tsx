@@ -46,7 +46,7 @@ class LayersDataTable extends React.Component {
     };
 
     displayLayer = (layer: IWorldLayer) => {
-        const center = [layer.data.latLonBoundingBox.minx,layer.data.latLonBoundingBox.maxy];
+        const center = layer.data.center;
         const parser = new ol.format.WMTSCapabilities();
         const projection = layer.data.latLonBoundingBox.crs;
         const olProjection = 'EPSG:3857';

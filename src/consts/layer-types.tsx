@@ -14,14 +14,5 @@ export enum AFFILIATION_TYPES {
 export const rasterData: ILayerTypeData = {
     storeType: 'coveragestores',
     layerDetailsField: 'coverage'
-};
+};*/
 
-export const vectorData: ILayerTypeData = {
-    storeType: 'datastores',
-    layerDetailsField: 'featureType'
-};
-
-export interface ILayerTypeData {
-    storeType: string,
-    layerDetailsField: string
-}*/

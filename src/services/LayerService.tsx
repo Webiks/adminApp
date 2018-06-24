@@ -94,11 +94,15 @@ export class LayerService {
                 switch (layer.layer.type) {
                     case ('RASTER'):
                         layer.data = layerDetails.data.coverage;
-                        storeId = layerDetails.data.coverage.store.name;             // set the store id
+                        storeId = layerDetails.data.coverage.store.name;                        // set the store id
+                        layer.data.center =                                                     // set the data center point
+                            [layerDetails.data.coverage.latLonBoundingBox.minx, layerDetails.data.coverage.latLonBoundingBox.maxy] ;
                         break;
                     case ('VECTOR'):
                         layer.data = layerDetails.data.featureType;
-                        storeId = layerDetails.data.featureType.store.name;          // set the store id
+                        storeId = layerDetails.data.featureType.store.name;                     // set the store id
+                        layer.data.center =                                                     // set the data center point
+                            [layerDetails.data.featureType.latLonBoundingBox.minx, layerDetails.data.featureType.latLonBoundingBox.maxy] ;
                         break;
                 }
                 layer.layer.storeName = this.splitString(storeId,":")[1];            // set the store name
@@ -124,12 +128,12 @@ export class LayerService {
                 switch (layer.layer.type) {
                     case ('RASTER'):
                         layer.store = store.data.coverageStore;
-                        layer.store.format = store.data.coverageStore.type;     // set the store format
-                        layer.layer.filePath = store.data.coverageStore.url;         // set the file path
+                        layer.store.format = store.data.coverageStore.type;             // set the store format
+                        layer.layer.filePath = store.data.coverageStore.url;            // set the file path
                         break;
                     case ('VECTOR'):
                         layer.store = store.data.dataStore;
-                        layer.store.format = store.data.dataStore.type;         // set the store format
+                        layer.store.format = store.data.dataStore.type;                 // set the store format
                         layer.layer.filePath = this.getVectorUrl(store.data.dataStore.connectionParameters.entry);    // set the file path
                         console.error("VECTOR FILE PATH: " + JSON.stringify(layer.layer.filePath));
                         // layer.layer.filePath = store.data.dataStore.connectionParameters.entry[1].$;    // set the file path
@@ -193,7 +197,7 @@ export class LayerService {
             .catch(error => { throw new Error(error) });
     }
 
-    // 2. delete the layer from the store by using the resource url (raster or vector)
+    // 2. delete the store
     static deleteStroe(worldName: string, storeName: string, storeType: string): Promise<any> {
         return axios.delete(`${this.baseUrl}/store/${worldName}/${storeName}/${storeType}`)
             .then(res => res.data)

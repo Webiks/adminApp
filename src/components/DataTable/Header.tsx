@@ -27,7 +27,26 @@ export interface IPropsHeader {
 class Header extends React.Component {
     props: IPropsHeader;
     worldName = this.props.worldName ? this.props.worldName : '';
-    tableTitle=`${this.worldName} World's Files List`;
+
+    componentDidMount() {
+        this.setTableTitle(this.props.tableType);
+    };
+
+    setTableTitle = (tableType: string): string => {
+        let tableTitle: string = '';
+        switch (tableType){
+        case ('worlds'):
+            tableTitle =`Worlds List`;
+            break;
+        case ('layers'):
+            tableTitle =`${this.worldName} World's Files List`;
+            break;
+        case ('editor'):
+            tableTitle =`File Editor`;
+            break;
+        }
+        return tableTitle;
+    };
 
     onInput = (e: any) => {
         this.setState({globalFilter: e.target.value});
@@ -46,6 +65,13 @@ class Header extends React.Component {
                        this.props.updateWorld({ name, layers });
                    });
                break;
+           case ('editor'):
+               LayerService.getAllLayersData(this.worldName)
+                   .then( layers => {
+                       const name = this.worldName;
+                       this.props.updateWorld({ name, layers });
+                   });
+               break;
        }
     };
 
@@ -54,7 +80,7 @@ class Header extends React.Component {
             <div>
                 <header>
                     <h2 style={{'textAlign':'center'}}>
-                        {this.tableTitle}
+                        {this.setTableTitle(this.props.tableType)}
                     </h2>
                     <div>
                         <span style={{'textAlign':'left'}}>
