@@ -103,7 +103,7 @@ class LayersDataTable extends React.Component {
         console.error("start delete layer: " + layer.name);
         confirm(`Are sure you want to DELETE ${layer.name}?`);
         LayerService.deleteLayerById(this.props.worldName, layer)
-            .then(layers => {
+            .then(response => {
                 console.error("LAYER DATA TABLE: delete layer - getAllLayersData...");
                 // get the new layers' list
                 LayerService.getAllLayersData(this.props.worldName)
