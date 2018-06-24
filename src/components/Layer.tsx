@@ -112,7 +112,7 @@ export class Layer extends React.Component {
                     </div>}
             </h1>
 
-            { this.state.selectedLayer && <LayerDetailsForm worldName={this.worldName} layerName={this.layerName}/> }
+            { this.state.selectedLayer && <LayerDetailsForm worldName={this.props.match.params.worldId} layerName={this.props.match.params.layerId}/> }
 
             <button onClick={this.props.backToWorlds}>Back to worlds</button>
 
