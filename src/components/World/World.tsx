@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import WorldHomePage from "../WorldHomePage";
+import WorldHomePage from "../WorldLayers/WorldHomePage";
 import { IState } from "../../store";
 import { IWorld } from '../../interfaces/IWorld';
 import { WorldsActions } from '../../actions/world.actions';

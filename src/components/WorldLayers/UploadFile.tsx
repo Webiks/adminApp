@@ -1,19 +1,20 @@
 import * as React from 'react';
 
-import config from "../config/config";
-import { IWorld } from "../interfaces/IWorld";
-import { IWorldLayer } from '../interfaces/IWorldLayer';
-import { WorldsActions } from '../actions/world.actions';
+import config from "../../config/config";
+import { IWorld } from "../../interfaces/IWorld";
+import { IWorldLayer } from '../../interfaces/IWorldLayer';
+import { WorldsActions } from '../../actions/world.actions';
 import { connect } from "react-redux";
-import { IState } from "../store";
-import { IPropsLayers } from '../interfaces/IPropsLayers';
+import { IState } from "../../store";
+import { IPropsLayers } from '../../interfaces/IPropsLayers';
 
 import { FileUpload } from 'primereact/components/fileupload/FileUpload';
-import { LayerService } from '../services/LayerService';
+import { LayerService } from '../../services/LayerService';
 
 /* Prime React components */
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
+import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
 
 class UploadFile extends React.Component {

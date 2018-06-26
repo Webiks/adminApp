@@ -8,19 +8,20 @@ import { IWorldLayer } from '../../interfaces/IWorldLayer';
 import { ITBAction } from '../../consts/action-types';
 import { LayerService } from '../../services/LayerService';
 import { ILayer } from '../../interfaces/ILayer';
-import UploadFile from '../UploadFile';
-import Header from './Header';
+import UploadFile from './UploadFile';
+import Header from '../DataTable/Header';
 import ol from 'openlayers'
 
 /* Prime React components */
-import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
 import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { Button } from 'primereact/components/button/Button';
 import { Dialog } from 'primereact/components/dialog/Dialog';
-import Footer from './Footer';
+import Footer from '../DataTable/Footer';
 
 export interface IPropsLayers {
     worldName: string,
@@ -95,7 +96,7 @@ class LayersDataTable extends React.Component {
     };
 
     editLayer = (layer: IWorldLayer) => {
-        console.log(`navigate to layer:${layer.name} form page`);
+        console.error(`navigate to layer:${layer.layer.name} form page`);
         this.props.navigateTo(`${this.props.worldName}/${layer.layer.name}`);
     };
 
@@ -132,17 +133,17 @@ class LayersDataTable extends React.Component {
     actionTemplate = (rowData: any, column: any) => {
         return (
             <div className="ui-button-icon ui-helper-clearfix">
-                <Button type="button" icon="fa-search" className="ui-button-success"
+                <Button type="button" icon="fa fa-search" className="ui-button-success" style={{margin: '3px 7px'}}
                         onClick={() => {
                             this.setState({selectedLayer: rowData, displayDialog: true});
                             this.displayLayer(rowData);
                         }}/>
-                <Button type="button" icon="fa-edit" className="ui-button-warning"
+                <Button type="button" icon="fa fa-edit" className="ui-button-warning" style={{margin: '3px 7px'}}
                         onClick={() => {
                             this.setState({selectedLayer: rowData, displayDialog: false});
                             this.editLayer(rowData)
                         }}/>
-                <Button type="button" icon="fa-close"
+                <Button type="button" icon="fa fa-close" style={{margin: '3px 7px'}}
                         onClick={() => {
                             this.setState({selectedLayer: rowData, displayDialog: false});
                             this.deleteLayer(rowData.layer)
@@ -155,18 +156,18 @@ class LayersDataTable extends React.Component {
         return  (
             <div className="content-section implementation">
                 <DataTable  value={this.props.world.layers} paginator={true} rows={10} responsive={false}
-                            resizableColumns={true} autoLayout={true} style={{margin:'4px 10px'}}
+                            resizableColumns={true} autoLayout={true} style={{margin:'10px 20px'}}
                             header={<Header worldName={this.props.worldName} tableType={`layers`}/>}
                             footer={<Footer worldName={this.props.worldName} />}
                             selectionMode="single" selection={this.state.selectedLayer}
                             onSelectionChange={(e: any)=>{this.setState({selectedLayer: e.data});}}>
-                        <Column field="layer.name" header="Name" sortable={true}/>
-                        <Column field="store.type" header="Type" sortable={true}/>
-                        <Column field="store.format" header="Format" sortable={true}/>
-                        <Column field="layer.fileExtension" header="Extension" sortable={true}/>
-                        <Column field="''"  header="Date Created" sortable={true}/>
-                        <Column field="''" header="Date Modified" sortable={true}/>
-                        <Column header="Actions" body={this.actionTemplate} style={{textAlign:'center', width: '6em'}}/>
+                        <Column field="layer.name" header="Name" sortable={true} style={{textAlign:'left', padding:'7px 20px'}}/>
+                        <Column field="store.type" header="Type" sortable={true} style={{width: '12%'}}/>
+                        <Column field="store.format" header="Format" sortable={true} style={{width: '12%'}}/>
+                        <Column field="layer.fileExtension" header="Extension" sortable={true} style={{width: '12%'}}/>
+                        <Column field="''"  header="Date Created" sortable={true} style={{width: '12%'}}/>
+                        <Column field="''" header="Date Modified" sortable={true} style={{width: '12%'}}/>
+                        <Column header="Actions" body={this.actionTemplate} style={{width: '12%'}}/>
                 </DataTable>
 
                 {this.state.selectedLayer && <div>

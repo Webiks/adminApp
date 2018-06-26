@@ -8,7 +8,7 @@ import { ITBAction } from '../consts/action-types';
 import { push } from 'react-router-redux';
 import { IWorldLayer } from '../interfaces/IWorldLayer';
 import { LayerService } from '../services/LayerService';
-import LayerEditor from './LayerEditor';
+import LayerEditor from './LayerEditor/LayerEditor';
 
 export interface ILayerComponentProps  {
     backToWorlds: () => void,
@@ -112,7 +112,7 @@ export class Layer extends React.Component {
                     </div>}
             </h1>
 
-            { this.state.selectedLayer && <LayerEditor worldName={this.props.match.params.worldId} layerName={this.props.match.params.layerId}/> }
+            { this.state.selectedLayer && <LayerEditor worldName={this.props.match.params.worldId} layer={this.state.selectedLayer}/> }
 
             <button onClick={this.props.backToWorlds}>Back to worlds</button>
 

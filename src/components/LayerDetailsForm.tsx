@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { IState } from '../store';
 
 /* Prime React components */
-import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
-import 'font-awesome/css/font-awesome.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 import { Button } from 'primereact/components/button/Button';
 import { InputText } from 'primereact/components/inputtext/InputText';
 import { WorldsActions } from '../actions/world.actions';

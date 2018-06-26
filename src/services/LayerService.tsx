@@ -2,6 +2,7 @@ import axios from 'axios';
 import config from "../config/config";
 import { IWorldLayer } from "../interfaces/IWorldLayer";
 import { ILayer } from '../interfaces/ILayer';
+import { AFFILIATION_TYPES } from '../consts/layer-types';
 
 export class LayerService {
 
@@ -43,7 +44,6 @@ export class LayerService {
 
     // B. get all layer's Data by name
     static getLayerByName (worldName: string, layerName: string): Promise<any> {
-        console.log("start the GET LAYER service for layer: " + layerName);
         // 1. get the layer type & resource info
         return this.getLayerInfo(worldName, layerName)
             // 2. get the layer's details data according to the layer's type
@@ -55,6 +55,11 @@ export class LayerService {
             .then( layerData => {
                 console.log("CALL the GET STORE DATA service... layerData: " + layerData);
                 return this.getStoreData(worldName, layerData)
+            })
+            // 4. get the layer's Input data from the user
+            .then( layerData => {
+                console.log("CALL the GET STORE DATA service... layerData: " + layerData);
+                return this.getInputData(layerData)
             })
             .catch(error => {
                 console.error("getLayer ERROR!" + error.message);
@@ -151,6 +156,26 @@ export class LayerService {
                 console.error("getStoreData ERROR!" + error.message);
                 throw new Error(error)
             });
+    }
+
+    // 4. get the input Data of the layer
+    static getInputData(layer: IWorldLayer): IWorldLayer {
+        console.error("getInputData SERVICE: " + JSON.stringify(layer.inputData));
+        layer.inputData = layer.inputData ? layer.inputData :
+            {
+                affiliation: AFFILIATION_TYPES.AFFILIATION_UNKNOWN,
+                GSD: 0,
+                sensor: {
+                    maker: '',
+                    name: '',
+                    bands: []
+                },
+                flightAltitude: 0,
+                cloudCoveragePercentage: 0,
+                zoom: 0
+            };
+        console.error("getAllLayersData after inputData: " + JSON.stringify(layer.inputData));
+        return { ...layer };
     }
 
     // get Capabilities

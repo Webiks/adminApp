@@ -6,8 +6,9 @@ import { IState } from '../../store';
 /* Prime React components */
 import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
+import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
-import UploadFile from '../UploadFile';
+import UploadFile from '../WorldLayers/UploadFile';
 
 const Footer = ({ worldName }) => (
     <UploadFile worldName={worldName}/>

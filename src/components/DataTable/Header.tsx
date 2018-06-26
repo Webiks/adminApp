@@ -2,31 +2,37 @@ import * as React from 'react';
 import { IWorld } from '../../interfaces/IWorld';
 import { connect } from 'react-redux';
 import { IState } from '../../store';
-
-/* Prime React components */
-import 'primereact/resources/primereact.min.css';
-import 'primereact/resources/themes/omega/theme.css';
-import 'font-awesome/css/font-awesome.css';
-import { Button } from 'primereact/components/button/Button';
-import { InputText } from 'primereact/components/inputtext/InputText';
 import { WorldService } from '../../services/WorldService';
 import { LayerService } from '../../services/LayerService';
 import { WorldsActions } from '../../actions/world.actions';
 import { push } from 'react-router-redux';
 import { ITBAction } from '../../consts/action-types';
-import { IWorldLayer } from '../../interfaces/IWorldLayer';
+
+/* Prime React components */
+import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import 'font-awesome/css/font-awesome.css';
+import { Button } from 'primereact/components/button/Button';
+import { InputText } from 'primereact/components/inputtext/InputText';
+
 
 export interface IPropsHeader {
     worldName?: string,
     tableType: string,
-    globalFilter: any,
+    // globalFilter: any,
     setWorlds: (worlds: IWorld[]) => ITBAction,
     updateWorld: (worlds: IWorld) => ITBAction
+}
+
+export interface IStateDetails {
+    globalFilter: any
 }
 
 class Header extends React.Component {
     props: IPropsHeader;
     worldName = this.props.worldName ? this.props.worldName : '';
+    state = {};
 
     componentDidMount() {
         this.setTableTitle(this.props.tableType);
@@ -85,10 +91,10 @@ class Header extends React.Component {
                     <div>
                         <span style={{'textAlign':'left'}}>
                             <i className="fa fa-search" style={{margin:'4px 4px 0 0'}}/>
-                            <InputText id='search' type="search" /*onInput={this.onInput}*/ placeholder="Global Search" size={30}/>
+                            <InputText id='search' type="search"  /*onInput={(e) => this.setState({globalFilter: e.target.value})}*/ placeholder="Global Search" size={30}/>
                         </span>
                         <span className="ui-button-icon ui-helper-clearfix" style={{'float':'right'}}>
-                            <Button id='refresh' icon="fa-refresh" onClick={(e: any) => this.onRefresh(this.props.tableType)}/>
+                            <Button id='refresh' icon="fa fa-refresh" onClick={(e: any) => this.onRefresh(this.props.tableType)}/>
                         </span>
                     </div>
 

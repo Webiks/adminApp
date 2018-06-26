@@ -1,18 +1,19 @@
 import * as React from 'react';
 
-import { LayerService } from "../services/LayerService";
-import { IWorld } from "../interfaces/IWorld";
-import { IWorldLayer } from "../interfaces/IWorldLayer";
-import { IState } from "../store";
-import { IPropsLayers } from '../interfaces/IPropsLayers';
+import { LayerService } from "../../services/LayerService";
+import { IWorld } from "../../interfaces/IWorld";
+import { IWorldLayer } from "../../interfaces/IWorldLayer";
+import { IState } from "../../store";
+import { IPropsLayers } from '../../interfaces/IPropsLayers';
 import { connect } from "react-redux";
-import { WorldsActions } from '../actions/world.actions';
+import { WorldsActions } from '../../actions/world.actions';
 
 /* Prime React components */
-import 'primereact/resources/primereact.min.css';
 import 'primereact/resources/themes/omega/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
-import LayersDataTable from './DataTable/LayersDataTable';
+import LayersDataTable from './LayersDataTable';
 
 export interface IStateWorldPage {
     displayDialog: boolean,
@@ -31,7 +32,10 @@ class WorldHomePage extends React.Component {
     getAllLayersData = (): void  => {
         console.log("World Home Page: getAllLayersData...");
         LayerService.getAllLayersData(this.props.worldName)
-            .then(layers => this.refresh(layers || []))
+            .then(layers => {
+                this.refresh(layers || []);                     // update the App store
+                console.error("getAllLayersData SugarCane inputData: " + JSON.stringify(layers[1].inputData));
+            })
             .catch(error => this.refresh([]));
     };
 
