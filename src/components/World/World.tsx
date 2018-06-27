@@ -50,7 +50,7 @@ export class World extends React.Component {
     // find and define the selected world
     findSelectedWorld = () => {
         const selectedWorld = this.props.worlds.find(({ name, layers }: IWorld) => this.worldName === name);
-        this.setState( { world : selectedWorld });
+        this.setState( { world : {...selectedWorld} });
         console.log("World: find the selected world = " + JSON.stringify(this.state.world));
     };
 

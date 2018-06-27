@@ -56,11 +56,6 @@ export class LayerService {
                 console.log("CALL the GET STORE DATA service... layerData: " + layerData);
                 return this.getStoreData(worldName, layerData)
             })
-            // 4. get the layer's Input data from the user
-            .then( layerData => {
-                console.log("CALL the GET STORE DATA service... layerData: " + layerData);
-                return this.getInputData(layerData)
-            })
             .catch(error => {
                 console.error("getLayer ERROR!" + error.message);
                 throw new Error(error)
@@ -69,9 +64,7 @@ export class LayerService {
 
     // 1. get the layer type & resource info
     static getLayerInfo(worldName: string, layerName: string): Promise<any> {
-        console.log("start the GET LAYER INFO service...");
-        console.log("parameters: world name = " + worldName + ", layer name = " + layerName);
-        console.log("url: " + JSON.stringify(`${this.baseUrl}${worldName}/${layerName}`));
+        console.log("start the GET LAYER INFO service..." + JSON.stringify(`${this.baseUrl}${worldName}/${layerName}`));
         return axios
             .get(`${this.baseUrl}/layer/${worldName}/${layerName}`)
             .then(layerInfo => {
@@ -87,13 +80,10 @@ export class LayerService {
 
     // 2. get layer's details ("data" field - type IRaster or IVector)
     static getLayerDetails(worldName: string, layer: IWorldLayer): Promise<any> {
-        console.log("start the GET LAYER DETAILS service...");
-        console.log("parameters: world name = " + worldName + ", layer = " + JSON.stringify(layer));
-        console.log("url: " + JSON.stringify(`${this.baseUrl}${worldName}/${layer.layer.name}/details`));
+        console.log("start the GET LAYER DETAILS service..." + JSON.stringify(`${this.baseUrl}${worldName}/${layer.layer.name}/details`));
         return axios
             .get(`${this.baseUrl}/details/${worldName}/${layer.layer.name}`)
             .then(layerDetails => {
-                console.log("GET LAYER DETAILS response: " + JSON.stringify(layerDetails.data));
                 // get the layer details data according to the layer's type
                 let storeId;
                 switch (layer.layer.type) {
@@ -122,14 +112,11 @@ export class LayerService {
 
     // 3. get the layer's store data (for the format) according to the layer's type and the layer title (in the layer's details)
     static getStoreData(worldName: string, layer: IWorldLayer): Promise<any> {
-        console.log("start the GET STORE DATA service...");
-        console.log("parameters: world name = " + worldName + ", STORE NAME = " + layer.layer.storeName);
-        console.log("url: " + JSON.stringify(`${this.baseUrl}${worldName}/${layer.layer.storeName}/${layer.layer.type}`));
+        console.log("start the GET STORE DATA service..." + JSON.stringify(`${this.baseUrl}${worldName}/${layer.layer.storeName}/${layer.layer.type}`));
         return axios
             .get(`${this.baseUrl}/store/${worldName}/${layer.layer.storeName}/${layer.layer.type}`)
             .then(store => {
                 // get the store data according to the layer's type
-                console.log("GET STORE DATA response: " + JSON.stringify(store.data));
                 switch (layer.layer.type) {
                     case ('RASTER'):
                         layer.store = store.data.coverageStore;
@@ -141,14 +128,12 @@ export class LayerService {
                         layer.store.format = store.data.dataStore.type;                 // set the store format
                         layer.layer.filePath = this.getVectorUrl(store.data.dataStore.connectionParameters.entry);    // set the file path
                         console.error("VECTOR FILE PATH: " + JSON.stringify(layer.layer.filePath));
-                        // layer.layer.filePath = store.data.dataStore.connectionParameters.entry[1].$;    // set the file path
                         break;
                 }
                 layer.store.name = layer.layer.storeName;
                 layer.store.type = layer.layer.type;
                 layer.layer.fileName = this.getSubstring(layer.layer.filePath, layer.store.name);   // set the file name
                 layer.layer.fileExtension = this.getSubstring(layer.layer.filePath, ".");           // set the file name
-                console.error("FILE NAME: " + layer.layer.fileName);
 
                 return { ...layer};
             })
@@ -158,30 +143,9 @@ export class LayerService {
             });
     }
 
-    // 4. get the input Data of the layer
-    static getInputData(layer: IWorldLayer): IWorldLayer {
-        console.error("getInputData SERVICE: " + JSON.stringify(layer.inputData));
-        layer.inputData = layer.inputData ? layer.inputData :
-            {
-                affiliation: AFFILIATION_TYPES.AFFILIATION_UNKNOWN,
-                GSD: 0,
-                sensor: {
-                    maker: '',
-                    name: '',
-                    bands: []
-                },
-                flightAltitude: 0,
-                cloudCoveragePercentage: 0,
-                zoom: 0
-            };
-        console.error("getAllLayersData after inputData: " + JSON.stringify(layer.inputData));
-        return { ...layer };
-    }
-
     // get Capabilities
     static getCapabilities (worldName: string, layerName: string): Promise<any> {
         console.log("start the GET CAPABILITIES service...");
-        console.log("parameters: world name = " + worldName + ", layer name = " + layerName);
         return axios
             .get(`${this.baseUrl}/wmts/${worldName}/${layerName}`)
             .then(xml => xml.data )

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { IWorld } from '../../interfaces/IWorld';
 import { connect } from 'react-redux';
+import { push } from 'react-router-redux';
 import { IState } from '../../store';
 import { ITBAction } from '../../consts/action-types';
 import { IWorldLayer } from '../../interfaces/IWorldLayer';
@@ -20,8 +21,6 @@ import { Column } from 'primereact/components/column/Column';
 import { InputText } from 'primereact/components/inputtext/InputText';
 import { cloneDeep, get } from 'lodash';
 import { Dropdown } from 'primereact/components/dropdown/Dropdown';
-import { push } from 'react-router-redux';
-
 
 export interface IPropsLayer {
     worldName: string,
@@ -67,13 +66,13 @@ class LayerEditor extends React.Component {
     // update the App store and refresh the page
     refresh = (layers: IWorldLayer[]) => {
         console.log('Layer Details: refresh...');
-        console.error('zoom value: ' + this.state.worldLayer.inputData.zoom);
+        console.warn('affiliation: ' + this.state.worldLayer.inputData.affiliation);
         const name = this.props.worldName;
         this.props.updateWorld({ name, layers });
-        console.error('layer (from layers) inputData: ' + JSON.stringify(layers[this.findSelectedLayerIndex()].inputData));
+        console.warn('layer (from layers) inputData: ' + JSON.stringify(layers[this.findSelectedLayerIndex()].inputData));
     };
 
-    backToWorldPage = () => this.props.navigateTo('./');
+    backToWorldPage = () => window.history.back();
 
     onEditorValueChange = (props, value) => {
         console.log("onEditorValueChange props: " + JSON.stringify(props));

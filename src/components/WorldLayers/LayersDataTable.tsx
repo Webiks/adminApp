@@ -41,7 +41,7 @@ class LayersDataTable extends React.Component {
     props: IPropsLayers;
 
     state: IStateTable = {
-        selectedLayer: this.props.world.layers[0],
+        selectedLayer: null,
         displayDialog: false,
         displayFooter: true
     };
@@ -52,7 +52,7 @@ class LayersDataTable extends React.Component {
         const projection = layer.data.latLonBoundingBox.crs;
         const olProjection = 'EPSG:3857';
         let map;
-        // layer.inputData.zoom = 14;
+        const zoom = layer.inputData.zoom === 0 ? 14 : layer.inputData.zoom;
 
         // get the Capabilities XML file in JSON format
         // 1. get the Capabilities XML file
@@ -88,7 +88,7 @@ class LayersDataTable extends React.Component {
                     view: new ol.View({
                         projection: olProjection,
                         center: ol.proj.transform(center, projection, olProjection),
-                        zoom: 14
+                        zoom
                     })
                 });
             })
@@ -96,16 +96,14 @@ class LayersDataTable extends React.Component {
     };
 
     editLayer = (layer: IWorldLayer) => {
-        console.error(`navigate to layer:${layer.layer.name} form page`);
         this.props.navigateTo(`${this.props.worldName}/${layer.layer.name}`);
     };
 
     deleteLayer = (layer: ILayer) => {
-        console.error("start delete layer: " + layer.name);
         confirm(`Are sure you want to DELETE ${layer.name}?`);
         LayerService.deleteLayerById(this.props.worldName, layer)
             .then(response => {
-                console.error("LAYER DATA TABLE: delete layer - getAllLayersData...");
+                console.log("LAYER DATA TABLE: delete layer - getAllLayersData...");
                 // get the new layers' list
                 LayerService.getAllLayersData(this.props.worldName)
                     .then(layers => this.refresh(layers || []))
@@ -162,11 +160,12 @@ class LayersDataTable extends React.Component {
                             selectionMode="single" selection={this.state.selectedLayer}
                             onSelectionChange={(e: any)=>{this.setState({selectedLayer: e.data});}}>
                         <Column field="layer.name" header="Name" sortable={true} style={{textAlign:'left', padding:'7px 20px'}}/>
-                        <Column field="store.type" header="Type" sortable={true} style={{width: '12%'}}/>
-                        <Column field="store.format" header="Format" sortable={true} style={{width: '12%'}}/>
+                        <Column field="store.type" header="Type" sortable={true} style={{width: '10%'}}/>
+                        <Column field="store.format" header="Format" sortable={true} style={{width: '10%'}}/>
                         <Column field="layer.fileExtension" header="Extension" sortable={true} style={{width: '12%'}}/>
                         <Column field="''"  header="Date Created" sortable={true} style={{width: '12%'}}/>
-                        <Column field="''" header="Date Modified" sortable={true} style={{width: '12%'}}/>
+                        <Column field="''" header="Last Modified" sortable={true} style={{width: '12%'}}/>
+                        <Column field="inputData.affiliation" header="File Affiliation" sortable={true} style={{width: '10%'}}/>
                         <Column header="Actions" body={this.actionTemplate} style={{width: '12%'}}/>
                 </DataTable>
 

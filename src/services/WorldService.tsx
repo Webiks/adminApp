@@ -18,7 +18,7 @@ export class WorldService {
                 console.log("worldService: world name: " + world.name);
                 return {
                     name: world.name,
-                    layers: [],
+                    // layers: [],
                 }
             }))
     }
@@ -30,7 +30,7 @@ export class WorldService {
                 console.log("worldService: world name: " + res.data.workspace.name);
                 return {
                     name: res.data.workspace.name,
-                    layers: [],
+                    // layers: [],
                 }
             })
             .catch(() => undefined);

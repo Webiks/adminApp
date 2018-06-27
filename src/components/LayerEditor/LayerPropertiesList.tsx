@@ -13,7 +13,7 @@ const propertiesList: IPropertiesList[] = [
     { label: 'File Type', path: 'worldLayer.layer.type', readonly: true },
     { label: 'Folder Path', path: 'worldLayer.layer.filePath', readonly: true },
     { label: 'Image Date Taken', path: '', readonly: true },
-    { label: 'Image Date Last Modified', path: '', readonly: true },
+    { label: 'Image Last Modified', path: '', readonly: true },
     { label: 'GPS (center point)', path:'worldLayer.data.center' , readonly: true },
     { label: 'Zoom Level', path: 'worldLayer.inputData.zoom', readonly: false, type: 'number', min: 1},
     { label: 'GSD (cm)', path: 'worldLayer.inputData.GSD', readonly: false, type: 'number', min: 0},
