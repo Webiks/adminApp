@@ -30,7 +30,8 @@ class WorldHomePage extends React.Component {
             .then(layers => {
                 // get the input Data for all the world's layers (from the App store)
                 let layersInput;
-                if (this.props.world.layers){
+                console.warn("getAllLayersData props layer: " + JSON.stringify(this.props.world.layers));
+                if (this.props.world.layers.length > 0){
                     layersInput = this.props.world.layers.map( (layer: IWorldLayer) => this.getInputData(layer));
                 } else {
                     layersInput = layers.map( (layer: IWorldLayer) => this.getInputData(layer));
@@ -39,13 +40,6 @@ class WorldHomePage extends React.Component {
                 this.refresh([...layersInput]);               // update the App store
             })
             .catch(error => this.refresh([]));
-    };
-
-    // update the App store and refresh the page
-    refresh = (layers: IWorldLayer[]) => {
-        console.log("World Home Page: REFRESH...");
-        const name = this.props.worldName;
-        this.props.updateWorld({ name, layers });
     };
 
     // get the input Data of the layer from the App store
@@ -67,6 +61,13 @@ class WorldHomePage extends React.Component {
         layer.inputData = inputData;
         console.warn("getAllLayersData after inputData: " + JSON.stringify(inputData));
         return { ...layer };
+    };
+
+    // update the App store and refresh the page
+    refresh = (layers: IWorldLayer[]) => {
+        console.log("World Home Page: REFRESH...");
+        const name = this.props.worldName;
+        this.props.updateWorld({ name, layers });
     };
 
     render() {

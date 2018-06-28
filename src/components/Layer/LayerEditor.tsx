@@ -54,26 +54,6 @@ class LayerEditor extends React.Component {
         return this.props.world.layers.indexOf(this.props.layer);
     };
 
-    // save the changes in the App store
-    save = () => {
-        const layers = [...this.props.world.layers];
-        console.log('save: ' + this.state.worldLayer.layer.name);
-        layers[this.findSelectedLayerIndex()] = this.state.worldLayer;
-        this.refresh(layers);
-        this.backToWorldPage();
-    };
-
-    // update the App store and refresh the page
-    refresh = (layers: IWorldLayer[]) => {
-        console.log('Layer Details: refresh...');
-        console.warn('affiliation: ' + this.state.worldLayer.inputData.affiliation);
-        const name = this.props.worldName;
-        this.props.updateWorld({ name, layers });
-        console.warn('layer (from layers) inputData: ' + JSON.stringify(layers[this.findSelectedLayerIndex()].inputData));
-    };
-
-    backToWorldPage = () => window.history.back();
-
     onEditorValueChange = (props, value) => {
         console.log("onEditorValueChange props: " + JSON.stringify(props));
         const split = props.path.split('.');
@@ -139,6 +119,26 @@ class LayerEditor extends React.Component {
         } else {
             return this.getFieldValue(props.rowData);
         }
+    };
+
+    backToWorldPage = () => window.history.back();
+
+    // save the changes in the App store
+    save = () => {
+        const layers = [...this.props.world.layers];
+        console.log('save: ' + this.state.worldLayer.layer.name);
+        layers[this.findSelectedLayerIndex()] = this.state.worldLayer;
+        this.refresh(layers);
+        this.backToWorldPage();
+    };
+
+    // update the App store and refresh the page
+    refresh = (layers: IWorldLayer[]) => {
+        console.log('Layer Details: refresh...');
+        console.warn('affiliation: ' + this.state.worldLayer.inputData.affiliation);
+        const name = this.props.worldName;
+        this.props.updateWorld({ name, layers });
+        console.warn('layer (from layers) inputData: ' + JSON.stringify(layers[this.findSelectedLayerIndex()].inputData));
     };
 
     render() {

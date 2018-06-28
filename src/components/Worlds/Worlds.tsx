@@ -5,7 +5,6 @@ import WorldNav from '../WorldNav/WorldNav';
 import { IState } from '../../store';
 import { IWorld } from '../../interfaces/IWorld';
 import { WorldService } from '../../services/WorldService';
-import { ITBAction } from '../../consts/action-types';
 import { WorldsActions } from '../../actions/world.actions';
 import { IPropsWorlds } from '../../interfaces/IPropsWorlds';
 

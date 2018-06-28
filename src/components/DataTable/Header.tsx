@@ -91,7 +91,7 @@ class Header extends React.Component {
                     <div>
                         <span style={{'textAlign':'left'}}>
                             <i className="fa fa-search" style={{margin:'4px 4px 0 0'}}/>
-                            <InputText id='search' type="search"  /*onInput={(e) => this.setState({globalFilter: e.target.value})}*/ placeholder="Global Search" size={30}/>
+                            <InputText id='search' type="search"  /*onInput={(e: any) => this.setState({globalFilter: e.target.value})}*/ placeholder="Global Search" size={30}/>
                         </span>
                         <span className="ui-button-icon ui-helper-clearfix" style={{'float':'right'}}>
                             <Button id='refresh' icon="fa fa-refresh" onClick={(e: any) => this.onRefresh(this.props.tableType)}/>

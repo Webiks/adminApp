@@ -20,7 +20,6 @@ import { Button } from 'primereact/components/button/Button';
 import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { InputText } from 'primereact/components/inputtext/InputText';
-import { Dropdown } from 'primereact/components/dropdown/Dropdown';
 
 export interface IPropsWorld {
     worldList: IWorld[],
@@ -32,6 +31,7 @@ export interface IPropsWorld {
 }
 
 export interface IStateDetails {
+    worldList: IWorld[],
     world: IWorld,
     worldName: string;
     globalFilter?: any;
@@ -40,37 +40,40 @@ export interface IStateDetails {
 class WorldEditor extends React.Component {
     props: IPropsWorld;
     state: IStateDetails;
+    newWorld: boolean;
 
     componentWillMount() {
-        this.setState({ world: cloneDeep(this.props.world), worldName: this.props.worldName });
+        if (this.props.worldName === 'new'){
+            this.newWorld = true;
+            this.setState({
+                world: {
+                    name: 'new',
+                    desc: '',
+                    country: '',
+                    directory: '',
+                    layers: []
+                },
+                displayDialog: true
+            });
+        } else {
+            this.newWorld = false;
+            this.setState({
+                world: cloneDeep(this.props.world),
+                worldName: this.props.worldName,
+                worldsList: this.props.worldList });
+        }
+        console.warn("World EDITOR: componentWillMount: props world list: " + JSON.stringify(this.props.worldList));
     }
 
     findSelectedWorldIndex() {
         return this.props.worldList.indexOf(this.props.world);
     };
 
-    // save the changes in the App store
-    save = () => {
-        const worlds = [...this.props.worldList];
-        console.log('save: ' + this.state.worldName);
-        worlds[this.findSelectedWorldIndex()] = this.state.world;
-        this.refresh(worlds);
-    };
-
-    // update the App store and refresh the page
-    refresh = (worlds: IWorld[]) => {
-        console.log('World Details: refresh...');
-        const layers = this.props.world.layers;
-        const name = this.props.worldName;
-        this.props.updateWorld({ name, layers });
-    };
-
+    // save the App state when the field's value is been changed
     onEditorValueChange = (props, value) => {
-        console.log("onEditorValueChange props: " + JSON.stringify(props));
-        const updatedWorld = [...props.value];
         const world = {...this.state.world};
-        updatedWorld[props.rowIndex][props.field] = value;
-        this.setState({world : updatedWorld} );
+        world[props.rowData.field] = value;
+        this.setState({world : {...world}} );
     };
 
     inputTextEditor(props, field) {
@@ -80,23 +83,47 @@ class WorldEditor extends React.Component {
 
     edit = (props) => this.inputTextEditor(props, props.rowData.field);
 
+    // save the changes in the App store
+    save = () => {
+        console.log('SAVE: world list: ' + JSON.stringify(this.props.worldList));
+        const worlds = [...this.props.worldList];
+        if (this.newWorld){
+            worlds.push(this.state.world);
+        } else {
+            worlds[this.findSelectedWorldIndex()] = this.state.world;
+        }
+        console.warn('save: update worlds' + JSON.stringify(worlds));
+        this.refresh(worlds);
+    };
+
+    // update the App store World's list and refresh the page
+    refresh = (worlds: IWorld[]) => {
+        console.log('World Details: refresh the world list...');
+        this.state.worldList = worlds;
+        this.props.setWorlds(worlds);
+    };
+
     render() {
+
+        console.warn("World Editor: RENDER Dialog box: " + JSON.stringify(this.state.world));
+
         const editorFooter =
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
-                <Button label="Reset" icon="fa fa-undo" onClick={this.componentWillMount.bind(this)} style={{ padding: '5px 10px', width: '20%' }}/>
-                <Button label="Save" icon="fa fa-check" onClick={this.save} style={{ padding: '5px 10px', width: '20%' }}/>
+                <Button label="Reset" icon="fa fa-undo" onClick={this.componentWillMount.bind(this)} style={{ padding: '5px 10px', width: '15%', float: 'left' }}/>
+                <Button label="Save" icon="fa fa-check" onClick={this.save} style={{ padding: '5px 10px', width: '15%'}}/>
             </div>;
 
         return (
             <div>
                 {this.state.world && <div className="content-section implementation"
-                                               style={{ textAlign: 'left', width: '70%', margin: 'auto' }}>
+                                               style={{ textAlign: 'left', width: '100%', margin: 'auto' }}>
                     <DataTable value={WorldPropertiesList} paginator={false} rows={10} responsive={false}
-                               footer={editorFooter} style={{ margin: '10px 20px' }}>
+                               footer={editorFooter}>
                         <Column field="label" header="Property" sortable={true}
                                 style={{ padding: '5px 20px', width: '35%' }}/>
                         <Column field="field" header="Value" sortable={false} style={{ padding: '5px 20px' }}
-                                editor={this.edit}/>
+                                editor={this.edit}
+                                body={(rowData) => this.state.world[rowData.field]}/>
                     </DataTable>
                 </div>}
             </div>
@@ -107,8 +134,9 @@ class WorldEditor extends React.Component {
 
 const mapStateToProps = (state: IState, { worldName }: any) => {
     return {
-        worldsList: state.worlds.list,
-        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name)
+        worldList: state.worlds.list,
+        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name),
+        worldName
     }
 };
 
@@ -120,4 +148,4 @@ const mapDispatchToProps = (dispatch: any) => ({
 
 export default connect(mapStateToProps, mapDispatchToProps)(WorldEditor);
 
-//  body={(rowData) => this.inputTextEditor(rowData)}
+//  worldsList: state.worlds.list,
