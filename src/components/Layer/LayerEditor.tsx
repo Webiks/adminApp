@@ -8,7 +8,8 @@ import { IWorldLayer } from '../../interfaces/IWorldLayer';
 import { WorldsActions } from '../../actions/world.actions';
 import { AFFILIATION_TYPES } from '../../consts/layer-types';
 import Header from '../DataTable/Header';
-import propertiesList from './LayerPropertiesList';
+import { cloneDeep, get } from 'lodash';
+import LayerPropertiesList from './LayerPropertiesList';
 
 /* Prime React components */
 import 'primereact/resources/themes/omega/theme.css';
@@ -19,7 +20,6 @@ import { Button } from 'primereact/components/button/Button';
 import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { InputText } from 'primereact/components/inputtext/InputText';
-import { cloneDeep, get } from 'lodash';
 import { Dropdown } from 'primereact/components/dropdown/Dropdown';
 
 export interface IPropsLayer {
@@ -153,7 +153,7 @@ class LayerEditor extends React.Component {
             <div>
                 {this.state.worldLayer && <div className="content-section implementation"
                                                style={{ textAlign: 'left', width: '70%', margin: 'auto' }}>
-                    <DataTable value={propertiesList} paginator={true} rows={10} responsive={false}
+                    <DataTable value={LayerPropertiesList} paginator={true} rows={10} responsive={false}
                                header={<Header worldName={this.state.worldName} tableType={`editor`}/>}
                                globalFilter={this.state.globalFilter}
                                footer={editorFooter} style={{ margin: '10px 20px' }}>

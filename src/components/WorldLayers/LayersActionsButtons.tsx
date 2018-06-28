@@ -8,8 +8,8 @@ import { IWorldLayer } from '../../interfaces/IWorldLayer';
 import { ITBAction } from '../../consts/action-types';
 import { LayerService } from '../../services/LayerService';
 import { ILayer } from '../../interfaces/ILayer';
+import UploadFile from './UploadFile';
 import Header from '../DataTable/Header';
-import Footer from '../DataTable/Footer';
 import ol from 'openlayers'
 
 /* Prime React components */
@@ -21,8 +21,10 @@ import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { Button } from 'primereact/components/button/Button';
 import { Dialog } from 'primereact/components/dialog/Dialog';
+import Footer from '../DataTable/Footer';
 
 export interface IPropsLayers {
+    rowData: any,
     worldName: string,
     world: IWorld,
     updateWorld: (worlds: IWorld) => ITBAction,
@@ -34,7 +36,7 @@ export interface IStateTable {
     displayDialog: boolean
 }
 
-class LayersDataTable extends React.Component {
+class LayersActionsButtons extends React.Component {
 
     props: IPropsLayers;
 
@@ -112,8 +114,8 @@ class LayersDataTable extends React.Component {
     // set state to initial state
     setInitState = () =>
         this.setState({
-                selectedLayer: null,
-                displayDialog: false
+            rowData: null,
+            displayDialog: false
         });
 
     // update the App store and refresh the page
@@ -124,66 +126,33 @@ class LayersDataTable extends React.Component {
         this.setInitState();
     };
 
-    actionsButtons = (rowData: any, column: any) => {
-        return (
+    render(){
+        return  (
             <div className="ui-button-icon ui-helper-clearfix">
                 <Button type="button" icon="fa fa-search" className="ui-button-success" style={{margin: '3px 7px'}}
                         onClick={() => {
-                            this.setState({selectedLayer: rowData, displayDialog: true});
-                            this.displayLayer(rowData);
+                            this.setState({selectedLayer: this.props.rowData, displayDialog: true});
+                            this.displayLayer(this.props.rowData);
                         }}/>
                 <Button type="button" icon="fa fa-edit" className="ui-button-warning" style={{margin: '3px 7px'}}
                         onClick={() => {
-                            this.setState({selectedLayer: rowData, displayDialog: false});
-                            this.editLayer(rowData)
+                            this.setState({selectedLayer: this.props.rowData, displayDialog: false});
+                            this.editLayer(this.props.rowData)
                         }}/>
                 <Button type="button" icon="fa fa-close" style={{margin: '3px 7px'}}
                         onClick={() => {
-                            this.setState({selectedLayer: rowData, displayDialog: false});
-                            this.deleteLayer(rowData.layer)
+                            this.setState({selectedLayer: this.props.rowData, displayDialog: false});
+                            this.deleteLayer(this.props.rowData.layer)
                         }}/>
-            </div>
-        );
-    };
-
-    render(){
-        return  (
-            <div className="content-section implementation">
-                <DataTable  value={this.props.world.layers} paginator={true} rows={10} responsive={false}
-                            resizableColumns={true} autoLayout={true} style={{margin:'10px 20px'}}
-                            header={<Header worldName={this.props.worldName} tableType={`layers`}/>}
-                            footer={<Footer worldName={this.props.worldName} />}
-                            selectionMode="single" selection={this.state.selectedLayer}
-                            onSelectionChange={(e: any)=>{this.setState({selectedLayer: e.data});}}>
-                        <Column field="layer.name" header="Name" sortable={true} style={{textAlign:'left', padding:'7px 20px'}}/>
-                        <Column field="store.type" header="Type" sortable={true} style={{width: '10%'}}/>
-                        <Column field="store.format" header="Format" sortable={true} style={{width: '10%'}}/>
-                        <Column field="layer.fileExtension" header="Extension" sortable={true} style={{width: '12%'}}/>
-                        <Column field="''"  header="Date Created" sortable={true} style={{width: '12%'}}/>
-                        <Column field="''" header="Last Modified" sortable={true} style={{width: '12%'}}/>
-                        <Column field="inputData.affiliation" header="File Affiliation" sortable={true} style={{width: '10%'}}/>
-                        <Column header="Actions" body={this.actionsButtons} style={{width: '12%'}}/>
-                </DataTable>
-
-                {this.state.selectedLayer && <div>
-                    <Dialog visible={this.state.displayDialog} modal={true}
-                            header={`Layer '${this.state.selectedLayer.layer.name}' map preview`}
-                            onHide={() => this.refresh(this.props.world.layers)}>
-                        <div className="ui-grid ui-grid-responsive ui-fluid">
-                            <div id="map" className="map" style={{height:'400px', width:'100%'}}/>
-                        </div>
-                    </Dialog>
-                </div>}
-
             </div>
         );
     }
 }
 
-const mapStateToProps = (state: IState, { worldName }: any) => {
+const mapStateToProps = (state: IState, { worldName, rowData }: any) => {
     return {
         world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name),
-        worldName
+        worldName, rowData
     }
 };
 
@@ -192,4 +161,6 @@ const mapDispatchToProps = (dispatch: any) => ({
     navigateTo: (location: string) => dispatch(push(location))
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(LayersDataTable);
+export default connect(mapStateToProps, mapDispatchToProps)(LayersActionsButtons);
+
+

@@ -1,14 +1,14 @@
 import { connect } from 'react-redux';
-import { IState } from '../store';
-import { WorldService } from '../services/WorldService';
-import { IWorld } from '../interfaces/IWorld';
+import { IState } from '../../store';
+import { WorldService } from '../../services/WorldService';
+import { IWorld } from '../../interfaces/IWorld';
 import * as React from 'react';
-import { WorldsActions } from '../actions/world.actions';
-import { ITBAction } from '../consts/action-types';
+import { WorldsActions } from '../../actions/world.actions';
+import { ITBAction } from '../../consts/action-types';
 import { push } from 'react-router-redux';
-import { IWorldLayer } from '../interfaces/IWorldLayer';
-import { LayerService } from '../services/LayerService';
-import LayerEditor from './LayerEditor/LayerEditor';
+import { IWorldLayer } from '../../interfaces/IWorldLayer';
+import { LayerService } from '../../services/LayerService';
+import LayerEditor from './LayerEditor';
 
 export interface ILayerComponentProps  {
     backToWorlds: () => void,

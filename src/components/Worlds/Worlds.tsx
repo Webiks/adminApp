@@ -7,11 +7,7 @@ import { IWorld } from '../../interfaces/IWorld';
 import { WorldService } from '../../services/WorldService';
 import { ITBAction } from '../../consts/action-types';
 import { WorldsActions } from '../../actions/world.actions';
-
-export interface IPropsWorlds {
-    worldsList: IWorld[],
-    setWorlds: (worlds: IWorld[]) => ITBAction
-}
+import { IPropsWorlds } from '../../interfaces/IPropsWorlds';
 
 class Worlds extends React.Component {
     props: IPropsWorlds;

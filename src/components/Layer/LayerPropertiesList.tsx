@@ -1,4 +1,3 @@
-
 export interface IPropertiesList {
     label: string,
     path: string,
@@ -7,7 +6,7 @@ export interface IPropertiesList {
     min?: number
 }
 
-const propertiesList: IPropertiesList[] = [
+const LayerPropertiesList: IPropertiesList[] = [
     { label: 'World Name', path: 'worldName', readonly: true },
     { label: 'File Name', path: 'worldLayer.layer.name', readonly: false, type: 'text'},
     { label: 'File Type', path: 'worldLayer.layer.type', readonly: true },
@@ -27,5 +26,5 @@ const propertiesList: IPropertiesList[] = [
     { label: 'File Affiliation', path: 'worldLayer.inputData.affiliation', readonly: false, type: 'dropdown'}
 ];
 
-export default propertiesList;
+export default LayerPropertiesList;
 

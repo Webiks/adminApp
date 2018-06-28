@@ -16,12 +16,6 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
 
-export interface IStateWorldPage {
-    displayDialog: boolean,
-    displayProgressBar: boolean,
-    value1: number
-}
-
 class WorldHomePage extends React.Component {
     props: IPropsLayers;
 
