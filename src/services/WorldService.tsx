@@ -38,30 +38,36 @@ export class WorldService {
             .catch(() => undefined);
     }
 
+    // ====================
+    //  CREATE a new World
+    // ====================
+    // get all layers of the world (including the ILayer's fields)
+    static createWorld(name: string): Promise<any> {
+        console.log("start the Create Worlds service..." + this.baseUrl);
+        return axios
+            .get(`${this.baseUrl}/${name}/new`)
+            .then(res => {
+                console.log("WORLD SERVICE: SUCCEED to create new World: " + name);
+                return res;
+            })
+            .catch(error => console.error("WORLD SERVICE: FAILED to create new World: " + error));
+    }
+
     // ==============
     // DELETE Request
     // ==============
 
     // delete world(workspace) from geoserver
-    static deleteWorldByName(world: IWorld) {
-        console.log("start the DELETE WORLD service for layer: " + world.name);
-        // 1. delete the layer from the store - using the resource url (raster or vector)
-        /*
-        return this.deleteLayerFromStroe(worldName, layer.name)
-            .then ( response => {
-                console.log("DELETE LAYER FROM STORE response: " + response);
-                // 2. delete the store
-                return this.deleteStroe(worldName, layer.storeName, layer.type);
+    static deleteWorldByName(name: string): Promise<any> {
+        console.log("start the DELETE WORLD service for layer: " + name);
+
+        return axios
+            .get(`${this.baseUrl}/${name}/delete`)
+            .then(res => {
+                console.log("WORLD SERVICE: SUCCEED to delete World: " + name);
+                return res;
             })
-            .then ( response => {
-                console.log("DELETE STORE response: " + response);
-                // 3. delete the layer from the layers' list
-                return this.deleteLayer(layer.id);
-            })
-            .catch(error => {
-                console.error("LAYER SERVICE: deleteLayer ERROR!" + error.message);
-                throw new Error(error)
-            });*/
+            .catch(error => console.error("WORLD SERVICE: FAILED to delete World: " + name + " error: " + error));
     }
 
 }

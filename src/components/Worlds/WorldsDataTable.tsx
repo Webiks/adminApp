@@ -5,9 +5,9 @@ import { push } from 'react-router-redux';
 import { IState } from '../../store';
 import { WorldsActions } from '../../actions/world.actions';
 import { ITBAction } from '../../consts/action-types';
-
+import { WorldService } from '../../services/WorldService';
 import Header from '../DataTable/Header';
-import { cloneDeep, get } from 'lodash';
+import WorldEditor from '../World/WorldEditor';
 
 /* Prime React components */
 import 'primereact/resources/themes/omega/theme.css';
@@ -17,14 +17,8 @@ import 'font-awesome/css/font-awesome.css';
 import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { Button } from 'primereact/components/button/Button';
-import { Dialog } from 'primereact/components/dialog/Dialog';
-import { InputText } from 'primereact/components/inputtext/InputText';
-import { WorldService } from '../../services/WorldService';
-import WorldEditor from '../World/WorldEditor';
-import { IStateTable } from '../WorldLayers/LayersDataTable';
 
-
-export interface IPropsLayers {
+export interface IPropsWorldsTable {
     worldsList: IWorld[],
     setWorlds: (worlds: IWorld[]) => ITBAction
     navigateTo: (layerName: string) => void
@@ -37,63 +31,68 @@ export interface IStateWorldsTable {
 
 class WorldsDataTable extends React.Component {
 
-    props: IPropsLayers;
+    props: IPropsWorldsTable;
     state: IStateWorldsTable = {
         selectedWorld: null,
         displayDialog: false
     };
+    displayDialog: boolean = false;
+
+    goToSelectedWorld = (e) => {
+        this.setState({ selectedWorld: e.data,
+                              displayDialog: false });
+        this.props.navigateTo(`/${e.data.name}`);
+    };
 
     editWorld = (rowData) => {
+        // this.displayDialog = true;
         this.setState({
-            displayDialog: true,
-            selectedWorld: {...rowData}});
+            selectedWorld: {...rowData},
+            displayDialog: true });
+        console.log("edit world: " + this.displayDialog);
+    };
+
+    deleteWorld = (rowData) => {
+        const confirmation = confirm(`Are sure you want to DELETE ${rowData.name}?`);
+        if (confirmation){
+            const index = this.findSelectedWorldIndex(rowData);
+            console.warn("deleteWorld index: " + index);
+            WorldService.deleteWorldByName(rowData.name)
+                .then(res => {
+                    const worlds = this.props.worldsList.filter( layer => layer.name !== rowData.name);
+                    this.refresh(worlds);
+                    /*WorldService.getWorlds().then(worlds => {
+                        this.refresh(worlds);
+                    });*/
+                });
+        }
     };
 
     findSelectedWorldIndex = (rowData) => {
         return this.props.worldsList.indexOf(rowData);
     };
 
-    goToSelectedWorld = (e) => {
-        this.setState({
-            selectedWorld: e.data,
-            displayDialog: false});
-        this.props.navigateTo(`/${e.data.name}`);
-    };
-
-    deleteWorld = (rowData) => {
-        confirm(`Are sure you want to DELETE ${rowData.name}?`);
-        const index = this.findSelectedWorldIndex(rowData);
-        console.warn("deleteWorld index: " + index);
-        this.setState({
-            worlds: this.props.worldsList.filter((val,i) => i !== index),
-            selectedWorld: null,
-            displayDialog: false});
-        this.refresh();
-        /*
-        WorldService.deleteWorldByName(world)
-            .then(response => {
-                console.log("LAYER DATA TABLE: delete layer - getAllLayersData...");
-                // get the new layers' list
-                LayerService.getAllLayersData(this.props.worldName)
-                    .then(layers => this.refresh(layers || []))
-                    .catch(error => this.refresh([]));
-            })
-            .catch(error => this.refresh([]));*/
-    };
-
     // set state to initial state
-    setInitState = () =>
+    setInitState = () => {
+        this.displayDialog = false;
         this.setState({
             selectedWorld: null,
             displayDialog: false
         });
+    };
 
-    // update the App store and refresh the page
-    refresh = () => {
+    // update the state world's list
+    update = () => {
         const worlds = [...this.props.worldsList];
         worlds[this.findSelectedWorldIndex(this.state.selectedWorld)] = this.state.selectedWorld;
-        this.props.setWorlds([...worlds]);
+        this.refresh(worlds);
+        console.log("Worlds Home Page: UPDATE..." + JSON.stringify(worlds));
+    };
+
+    // update the App store and refresh the page
+    refresh = (worlds) => {
         this.setInitState();
+        this.props.setWorlds([...worlds]);
         console.log("Worlds Home Page: REFRESH..." + JSON.stringify([...worlds]));
     };
 
@@ -104,6 +103,10 @@ class WorldsDataTable extends React.Component {
             },
             displayDialog: true
         });
+    };
+
+    setDisplayDialog = (value) => {
+        this.setState({ displayDialog: value });
     };
 
     actionsButtons = (rowData: any, column: any) => {
@@ -143,16 +146,11 @@ class WorldsDataTable extends React.Component {
                     </DataTable>
                 </div>}
 
-                {this.state.selectedWorld && <div>
-                    <Dialog visible={this.state.displayDialog} modal={true}
-                            header={`${this.state.selectedWorld.name} World Details`}
-                            responsive={true} style={{width:'50%'}}
-                            onHide={() => this.refresh()}>
-                        <div className="ui-grid ui-grid-responsive ui-fluid">
-                            <WorldEditor worldName={this.state.selectedWorld.name}/>
+                    {this.state.selectedWorld && this.state.displayDialog && <div>
+                        <div className="ui-grid ui-grid-responsive ui-fluid" >
+                            <WorldEditor worldName={ this.state.selectedWorld.name } setDisplayDialog={this.setDisplayDialog} displayDialog={true}/>
                         </div>
-                    </Dialog>
-                </div>}
+                    </div>}
 
             </div>
         );

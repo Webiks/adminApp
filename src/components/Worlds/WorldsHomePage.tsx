@@ -15,7 +15,7 @@ import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
 
 export interface IStateWorlds {
-    worldsList: any
+    worlds: any
 }
 
 class WorldsHomePage extends React.Component {
@@ -60,15 +60,14 @@ class WorldsHomePage extends React.Component {
     };
 
     updateWorlds = (worlds: IWorld[]) => {
-        this.setState( { worldsList: worlds});
-        console.log("Worlds Home Page: UPDATE..." + JSON.stringify(worlds));
-        this.props.setWorlds(worlds);
+        console.log("Worlds Home Page: UPDATE before..." + JSON.stringify(worlds));
+        this.setState( { worlds });                                         // set the state
+        this.props.setWorlds(worlds);                                             // set the App store
     };
 
     render() {
 
         console.warn("Worlds Home Page: RENDER..." + JSON.stringify(this.props.worldsList));
-        // this.refresh(this.props.worldsList);
 
         return (
             <div>

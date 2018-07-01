@@ -97,16 +97,18 @@ class LayersDataTable extends React.Component {
     };
 
     deleteLayer = (layer: ILayer) => {
-        confirm(`Are sure you want to DELETE ${layer.name}?`);
-        LayerService.deleteLayerById(this.props.worldName, layer)
-            .then(response => {
-                console.log("LAYER DATA TABLE: delete layer - getAllLayersData...");
-                // get the new layers' list
-                LayerService.getAllLayersData(this.props.worldName)
-                    .then(layers => this.refresh(layers || []))
-                    .catch(error => this.refresh([]));
-            })
-            .catch(error => this.refresh([]));
+        const confirmation = confirm(`Are sure you want to DELETE ${layer.name}?`);
+        if (confirmation){
+            LayerService.deleteLayerById(this.props.worldName, layer)
+                .then(response => {
+                    console.log("LAYER DATA TABLE: delete layer - getAllLayersData...");
+                    // get the new layers' list
+                    LayerService.getAllLayersData(this.props.worldName)
+                        .then(layers => this.refresh(layers || []))
+                        .catch(error => this.refresh([]));
+                })
+                .catch(error => this.refresh([]));
+        }
     };
 
     // set state to initial state
