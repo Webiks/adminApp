@@ -1,0 +1,14 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+form .ui-inputgroup{
+    justify-content: center;
+    margin-bottom: 10px;
+}
+.error {
+    margin: 20px 0;
+    color: #dc0202;
+    font-weight: 500;
+}

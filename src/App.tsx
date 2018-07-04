@@ -1,23 +1,45 @@
 import * as React from 'react';
 import './App.css';
-import { Route } from 'react-router';
-import World from './components/World/World';
+import { Route, Switch, withRouter } from 'react-router-dom';
+import Login from './components/Login/Login';
+import PrivateRoute from './components/Login/PrivateRoute';
+import { SetAuth } from './actions/login.actions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import Navbar from './components/Navbar/Navbar';
+import LoginService from './components/Login/LoginService';
 import Worlds from './components/Worlds/Worlds';
 
 class App extends React.Component {
+    props: { SetAuth: (bool: boolean) => {} };
+
+    componentDidMount() {
+        LoginService.checkAuth()
+            .then(() => this.props.SetAuth(true))
+            .catch(() => this.props.SetAuth(false));
+    }
+
     public render() {
         return (
-            <div className="App">
-
-                <header className="App-header">
-                    <h1 className="App-title">Tb Admin App</h1>
-                </header>
-
-                <Route exact={true} path="/" component={Worlds}/>
-                <Route path="/:worldId" component={World}/>
+            <div>
+                <Navbar/>
+                <div className="App">
+                    <Switch>
+                        <Route path="/login" component={Login}/>
+                        <PrivateRoute exact={true} path="/" component={Worlds}/>
+                    </Switch>
+                </div>
             </div>
         );
     }
 }
 
-export default App;
+const maStateToProps = (state, props) => ({
+    ...props
+});
+
+const mapDispatchToProps = (dispatch: any) => ({
+    ...bindActionCreators({ SetAuth }, dispatch)
+});
+
+export default withRouter(connect(maStateToProps, mapDispatchToProps)(App));
