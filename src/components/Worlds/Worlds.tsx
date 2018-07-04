@@ -25,15 +25,17 @@ class Worlds extends React.Component {
     };
 
     render() {
-        return  <div className="worlds"> {
-                    this.props.worldsList.map(({ name }: IWorld) => <WorldNav key={name} worldName={name}/>)
-                }
-                </div>
+        return <div>
+            <div className="worlds"> {
+                this.props.worldsList.map(({ name }: IWorld) => <WorldNav key={name} worldName={name}/>)
+            }
+            </div>
+        </div>
+
     }
 }
 
 const mapStateToProps = (state: IState) => {
-    console.log(state);
     return {
         worldsList: state.worlds.list
     };
