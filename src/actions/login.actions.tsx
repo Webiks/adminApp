@@ -12,10 +12,4 @@ export function SetAuth(payload: boolean): ILoginAction {
         type: LoginActionTypes.SET_AUTH,
         payload
     };
-};
-
-
-
-
-
-
+}

@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { IState } from '../../store';
 import { SetAuth } from '../../actions/login.actions';
 import { bindActionCreators } from 'redux';
-import { push } from 'react-router-redux';
 import LoginService from '../Login/LoginService';
 
 class Navbar extends React.Component {
@@ -29,9 +28,10 @@ class Navbar extends React.Component {
                 </Typography>
 
                 {
-                    this.props.login.isAuthenticated ? <IconButton color="inherit" aria-label="Logout" onClick={() => this.logout() }>
-                        <Icon className="fa fa-sign-out"/>
-                    </IconButton> : null
+                    this.props.login.isAuthenticated ?
+                        <IconButton color="inherit" aria-label="Logout" onClick={() => this.logout()}>
+                            <Icon className="fa fa-sign-out"/>
+                        </IconButton> : null
                 }
 
             </Toolbar>
@@ -39,16 +39,7 @@ class Navbar extends React.Component {
     }
 }
 
-const mapStateToProps = (state: IState, props: any): any => {
-    return {
-        ...props,
-        login: state.login,
-        router: state.router
-    };
-};
+const mapStateToProps = (state: IState, props: any): any => ({ isAuthenticated: state.login.isAuthenticated });
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({ SetAuth }, dispatch);
 
-const mapDispatchToProps = (dispatch: any) => ({
-    ...bindActionCreators({ push, SetAuth }, dispatch)
-});
-
-export default connect(mapStateToProps, mapDispatchToProps )(Navbar);
+export default connect(mapStateToProps, mapDispatchToProps)(Navbar);

@@ -34,12 +34,6 @@ class App extends React.Component {
     }
 }
 
-const maStateToProps = (state, props) => ({
-    ...props
-});
+const mapDispatchToProps: any = (dispatch: any) => bindActionCreators({ SetAuth }, dispatch);
 
-const mapDispatchToProps = (dispatch: any) => ({
-    ...bindActionCreators({ SetAuth }, dispatch)
-});
-
-export default withRouter(connect(maStateToProps, mapDispatchToProps)(App));
+export default withRouter(connect(null, mapDispatchToProps)(App) as any);
