@@ -80,58 +80,6 @@ class Navbar extends React.Component {
                                     </ClickAwayListener>
                                 </Popper>
                             </Manager>
-
-
-
-
-
-
-
-
-                            {/*<IconButton color="inherit"*/}
-                                        {/*aria-label="Logout"*/}
-                                        {/*aria-owns="menu-user"*/}
-                                        {/*onClick={(event) => this.setState({ anchorEl: event.currentTarget })}>*/}
-                                {/*<Icon className="fa fa-user"/>*/}
-                            {/*</IconButton>*/}
-
-                            {/*<Popper*/}
-                                {/*placement="bottom-start"*/}
-                                {/*eventsEnabled={open}*/}
-                            {/*>*/}
-                                {/*<ClickAwayListener onClickAway={() => this.setState({ anchorEl: null })}>*/}
-                                    {/*<Grow in={open} style={{ transformOrigin: '0 0 0' }}>*/}
-                                        {/*<Paper>*/}
-                                            {/*<MenuList role="menu">*/}
-                                                {/*<MenuItem onClick={() => this.logout()}>*/}
-                                                {/*Logout*/}
-                                                {/*<IconButton aria-label="Logout">*/}
-                                                {/*<Icon className="fa fa-sign-out"/>*/}
-                                                {/*</IconButton>*/}
-                                                {/*</MenuItem>*/}
-                                            {/*</MenuList>*/}
-                                        {/*</Paper>*/}
-                                    {/*</Grow>*/}
-                                {/*</ClickAwayListener>*/}
-                            {/*</Popper>*/}
-
-
-
-                            {/*<Menu*/}
-                                {/*id="menu-user"*/}
-                                {/*MenuListProps={{ }}*/}
-                                {/*disableAutoFocus={true}*/}
-                                {/*anchorEl={this.state.anchorEl}*/}
-                                {/*open={Boolean(this.state.anchorEl)}*/}
-                                {/*onClose={() => this.setState({ anchorEl: null })}*/}
-                                {/*TransitionComponent={Fade}>*/}
-                                {/*<MenuItem onClick={() => this.logout()}>*/}
-                                    {/*Logout*/}
-                                    {/*<IconButton aria-label="Logout">*/}
-                                        {/*<Icon className="fa fa-sign-out"/>*/}
-                                    {/*</IconButton>*/}
-                                {/*</MenuItem>*/}
-                            {/*</Menu>*/}
                         </div>
 
                         : null

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { IState } from '../../store';
 import { ITBAction } from '../../consts/action-types';
 import { IWorld } from '../../interfaces/IWorld';
@@ -8,7 +9,7 @@ import WorldsDataTable from './WorldsDataTable';
 import { WorldService } from '../../services/WorldService';
 import { Route, withRouter } from 'react-router';
 import World from '../World/World';
-import { bindActionCreators } from 'redux';
+
 /* Prime React components */
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -16,16 +17,13 @@ import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
 
 export interface IPropsWorlds {
+    match: any,
     worldsList: IWorld[],
     setWorlds: (worlds: IWorld[]) => ITBAction
 }
 
-export interface IStateWorlds {
-    worlds: any
-}
-
 class Worlds extends React.Component {
-    props: IPropsWorlds | any;
+    props: IPropsWorlds;
 
     // GET: get all worlds on startUp
     componentDidMount() {
@@ -54,8 +52,10 @@ class Worlds extends React.Component {
 
     render() {
         return (
+
             <div>
                 <Route path="/world/:worldName" component={World}/>
+                { console.warn("RENDER: match: " + JSON.stringify(this.props.match)) }
                 {
                     this.props.match.isExact
                         ? this.props.worldsList &&
@@ -68,7 +68,7 @@ class Worlds extends React.Component {
     };
 }
 
-const mapStateToProps = (state: IState, { match }) => ({
+const mapStateToProps = (state: IState, { match }: any) => ({
     match,
     worldsList: state.worlds.list
 });

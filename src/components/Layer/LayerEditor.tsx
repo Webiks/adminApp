@@ -21,13 +21,13 @@ import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { InputText } from 'primereact/components/inputtext/InputText';
 import { Dropdown } from 'primereact/components/dropdown/Dropdown';
+import { bindActionCreators } from 'redux';
 
 export interface IPropsLayer {
     worldName: string,
     layer: IWorldLayer,
     world: IWorld,
-    updateWorld: (worlds: Partial<IWorld>) => ITBAction,
-    navigateTo: (layerName: string) => void
+    updateWorld: (worlds: Partial<IWorld>) => ITBAction
 }
 
 export interface IStateDetails {
@@ -170,15 +170,10 @@ class LayerEditor extends React.Component {
 
 }
 
-const mapStateToProps = (state: IState, { worldName }: any) => {
-    return {
-        world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name)
-    }
-};
+const mapStateToProps = (state: IState, { worldName, layer }: any) =>
+    ({ worldName, layer,
+       world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name) });
 
-const mapDispatchToProps = (dispatch: any) => ({
-    updateWorld: (payload: IWorld) => dispatch(WorldsActions.updateWorldAction(payload)),
-    navigateTo:  (location: string) => dispatch(push(location))
-});
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({ updateWorld: WorldsActions.updateWorldAction }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(LayerEditor);

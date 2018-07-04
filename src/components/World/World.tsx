@@ -1,10 +1,10 @@
 import * as React from 'react';
+
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import WorldHomePage from '../WorldLayers/WorldHomePage';
+import WorldHomePage from '../WorldLayers/WorldLayers';
 import { IState } from '../../store';
 import { IWorld } from '../../interfaces/IWorld';
-import { WorldsActions } from '../../actions/world.actions';
 import { bindActionCreators } from 'redux';
 
 export interface IWorldComponentProps {
@@ -13,28 +13,26 @@ export interface IWorldComponentProps {
     push: (path: string) => {}
 }
 
-export interface IWorldComponentState {
-    world?: IWorld
-}
-
+// check if the world exist in the GeoServer Workspaces and navigate to its home page
 const World = ({ worldName, world, push }: IWorldComponentProps | any) => (
     <div>
         <h1>
             {
-                world ? `${world.name} World` :
+                world ? `${worldName} World` :
                     <div>
                         <span style={{ color: 'gold' }}> ⚠ </span>
                         <span>World {worldName} doesn't exist!</span>
-                    </div>}
+                    </div>
+            }
         </h1>
         <div>
-            {world && <WorldHomePage worldName={world.name}/>}
+            { world && <WorldHomePage worldName={worldName}/> }
         </div>
         <button onClick={() => push('/')}>Back to worlds</button>
     </div>
 );
 
-const mapStateToProps = (state: IState, { match }) => ({
+const mapStateToProps = (state: IState, { match }: any) => ({
         world: state.worlds.list.find(({ name, layers }: IWorld) => match.params.worldName === name),
         worldName: match.params.worldName
 });

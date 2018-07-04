@@ -55,6 +55,24 @@ class LayersDataTable extends React.Component {
             displayDialog: false
     });
 
+    editLayer = (layer: IWorldLayer) => {
+        this.props.navigateTo(`/world/${this.props.worldName}/layer/${layer.layer.name}`);
+    };
+
+    deleteLayer = (layer: ILayer) => {
+        const confirmation = confirm(`Are sure you want to DELETE ${layer.name}?`);
+        if (confirmation){
+            LayerService.deleteLayerById(this.props.worldName, layer)
+                .then(response => {
+                    console.log("LAYER DATA TABLE: delete layer...");
+                    // update the layers' list
+                    const layers = this.props.world.layers.filter( worldLayer => worldLayer.layer.name !== layer.name);
+                    this.refresh(layers);
+                })
+                .catch(error => this.refresh([]));
+        }
+    };
+
     displayLayer = (layer: IWorldLayer) => {
         const center = layer.data.center;
         const parser = new ol.format.WMTSCapabilities();
@@ -102,24 +120,6 @@ class LayersDataTable extends React.Component {
                 });
             })
             .catch(error => { throw new Error(error) });
-    };
-
-    editLayer = (layer: IWorldLayer) => {
-        this.props.navigateTo(`${this.props.worldName}/${layer.layer.name}`);
-    };
-
-    deleteLayer = (layer: ILayer) => {
-        const confirmation = confirm(`Are sure you want to DELETE ${layer.name}?`);
-        if (confirmation){
-            LayerService.deleteLayerById(this.props.worldName, layer)
-                .then(response => {
-                    console.log("LAYER DATA TABLE: delete layer...");
-                    // update the layers' list
-                    const layers = this.props.world.layers.filter( worldLayer => worldLayer.layer.name !== layer.name);
-                    this.refresh(layers);
-                })
-                .catch(error => this.refresh([]));
-        }
     };
 
     // update the App store and refresh the page
