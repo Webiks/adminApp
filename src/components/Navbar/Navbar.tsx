@@ -45,7 +45,7 @@ class Navbar extends React.Component {
                 {
                     this.props.isAuthenticated ?
                         <div>
-                            <Manager  disableAutoFocus={true}>
+                            <Manager>
                                 <Target>
                                     <div
                                         ref={node => {

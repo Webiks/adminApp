@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import Navbar from './components/Navbar/Navbar';
 import LoginService from './components/Login/LoginService';
-import WorldsHomePage from './components/Worlds/WorldsHomePage';
+import Worlds from './components/Worlds/Worlds';
 
 class App extends React.Component {
     props: { SetAuth: (bool: boolean) => {} };
@@ -26,7 +26,7 @@ class App extends React.Component {
                 <div className="App">
                     <Switch>
                         <Route path="/login" component={Login}/>
-                        <PrivateRoute exact={true} path="/" component={WorldsHomePage}/>
+                        <PrivateRoute path="/" component={Worlds}/>
                     </Switch>
                 </div>
             </div>

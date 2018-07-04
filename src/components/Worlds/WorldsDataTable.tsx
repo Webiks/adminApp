@@ -51,7 +51,7 @@ class WorldsDataTable extends React.Component {
     goToSelectedWorld = (e) => {
         this.setState({ selectedWorld: e.data,
                               displayDialog: false });
-        this.props.navigateTo(`/${e.data.name}`);
+        this.props.navigateTo(`${e.data.name}`);
     };
 
     editWorld = (rowData) => {
@@ -162,7 +162,7 @@ const mapStateToProps = (state: IState) => {
 const mapDispatchToProps = (dispatch: any) => ({
     setWorlds: (payload: IWorld[]) => dispatch(WorldsActions.setWorldsAction(payload)),
     updateWorld: (payload: IWorld) => dispatch(WorldsActions.updateWorldAction(payload)),
-    navigateTo: (location: string) => dispatch(push(location))
+    navigateTo: (location: string) => dispatch(push(`/world/${location}`))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(WorldsDataTable);
