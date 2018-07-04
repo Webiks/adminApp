@@ -1,15 +1,27 @@
 import * as React from 'react';
 import './Navbar.css';
-import { AppBar, Fade, Icon, IconButton, Menu, MenuItem, Toolbar, Typography } from '@material-ui/core';
+import {
+    AppBar,
+    ClickAwayListener,
+    Fade, Grow,
+    Icon,
+    IconButton,
+    Menu,
+    MenuItem, MenuList, Paper,
+    Toolbar,
+    Typography
+} from '@material-ui/core';
 import { connect } from 'react-redux';
 import { IState } from '../../store';
 import { SetAuth } from '../../actions/login.actions';
 import { bindActionCreators } from 'redux';
 import LoginService from '../Login/LoginService';
+import { Popper, Manager, Target } from 'react-popper';
 
 class Navbar extends React.Component {
     props: any;
-    state = { anchorEl: null };
+    state = { open: false };
+    target1;
 
     logout = () => {
         LoginService.logout()
@@ -17,6 +29,8 @@ class Navbar extends React.Component {
     };
 
     render() {
+        const open = Boolean(this.state.open);
+
         return <AppBar color="primary" title="My App">
             <Toolbar className="root">
 
@@ -31,27 +45,93 @@ class Navbar extends React.Component {
                 {
                     this.props.isAuthenticated ?
                         <div>
-                            <IconButton color="inherit"
-                                        aria-label="Logout"
-                                        aria-owns="menu-user"
-                                        onClick={(event) => this.setState({ anchorEl: event.currentTarget })}>
-                                <Icon className="fa fa-user"/>
-                            </IconButton>
+                            <Manager  disableAutoFocus={true}>
+                                <Target>
+                                    <div
+                                        ref={node => {
+                                            this.target1 = node;
+                                        }}
+                                    >
+                                        <IconButton color="inherit"
+                                                    aria-label="Logout"
+                                                    aria-owns="menu-user"
+                                                    onClick={(event) => this.setState({ open: true })}>
+                                            <Icon className="fa fa-user"/>
+                                        </IconButton>
+                                    </div>
+                                </Target>
+                                <Popper
+                                    placement="bottom-start"
+                                    eventsEnabled={open}>
 
-                            <Menu
-                                id="menu-user"
-                                disableAutoFocus={true}
-                                anchorEl={this.state.anchorEl}
-                                open={Boolean(this.state.anchorEl)}
-                                onClose={() => this.setState({ anchorEl: null })}
-                                TransitionComponent={Fade}>
-                                <MenuItem onClick={() => this.logout()}>
-                                    Logout
-                                    <IconButton aria-label="Logout">
-                                        <Icon className="fa fa-sign-out"/>
-                                    </IconButton>
-                                </MenuItem>
-                            </Menu>
+                                    <ClickAwayListener onClickAway={() => this.setState({ open: false })}>
+                                        <Grow in={open} style={{ transformOrigin: '0 0 0' }}>
+                                            <Paper>
+                                                <MenuList role="menu">
+                                                    <MenuItem onClick={() => this.logout()}>
+                                                        Logout
+                                                        <IconButton aria-label="Logout">
+                                                            <Icon className="fa fa-sign-out"/>
+                                                        </IconButton>
+                                                    </MenuItem>
+                                                </MenuList>
+                                            </Paper>
+                                        </Grow>
+                                    </ClickAwayListener>
+                                </Popper>
+                            </Manager>
+
+
+
+
+
+
+
+
+                            {/*<IconButton color="inherit"*/}
+                                        {/*aria-label="Logout"*/}
+                                        {/*aria-owns="menu-user"*/}
+                                        {/*onClick={(event) => this.setState({ anchorEl: event.currentTarget })}>*/}
+                                {/*<Icon className="fa fa-user"/>*/}
+                            {/*</IconButton>*/}
+
+                            {/*<Popper*/}
+                                {/*placement="bottom-start"*/}
+                                {/*eventsEnabled={open}*/}
+                            {/*>*/}
+                                {/*<ClickAwayListener onClickAway={() => this.setState({ anchorEl: null })}>*/}
+                                    {/*<Grow in={open} style={{ transformOrigin: '0 0 0' }}>*/}
+                                        {/*<Paper>*/}
+                                            {/*<MenuList role="menu">*/}
+                                                {/*<MenuItem onClick={() => this.logout()}>*/}
+                                                {/*Logout*/}
+                                                {/*<IconButton aria-label="Logout">*/}
+                                                {/*<Icon className="fa fa-sign-out"/>*/}
+                                                {/*</IconButton>*/}
+                                                {/*</MenuItem>*/}
+                                            {/*</MenuList>*/}
+                                        {/*</Paper>*/}
+                                    {/*</Grow>*/}
+                                {/*</ClickAwayListener>*/}
+                            {/*</Popper>*/}
+
+
+
+                            {/*<Menu*/}
+                                {/*id="menu-user"*/}
+                                {/*MenuListProps={{ }}*/}
+                                {/*disableAutoFocus={true}*/}
+                                {/*anchorEl={this.state.anchorEl}*/}
+                                {/*open={Boolean(this.state.anchorEl)}*/}
+                                {/*onClose={() => this.setState({ anchorEl: null })}*/}
+                                {/*TransitionComponent={Fade}>*/}
+                                {/*<MenuItem onClick={() => this.logout()}>*/}
+                                    {/*Logout*/}
+                                    {/*<IconButton aria-label="Logout">*/}
+                                        {/*<Icon className="fa fa-sign-out"/>*/}
+                                    {/*</IconButton>*/}
+                                {/*</MenuItem>*/}
+                            {/*</Menu>*/}
                         </div>
 
                         : null
