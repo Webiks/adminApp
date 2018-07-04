@@ -1,26 +1,39 @@
 import * as React from 'react';
 import './App.css';
-import { Route, Switch } from 'react-router';
-import World from './components/World/World';
-// import Worlds from './components/Worlds/Worlds';
-import Layer from './components/Layer/Layer';
+import { Route, Switch, withRouter } from 'react-router-dom';
+import Login from './components/Login/Login';
+import PrivateRoute from './components/Login/PrivateRoute';
+import { SetAuth } from './actions/login.actions';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import Navbar from './components/Navbar/Navbar';
+import LoginService from './components/Login/LoginService';
 import WorldsHomePage from './components/Worlds/WorldsHomePage';
 
-const App = () => (
+class App extends React.Component {
+    props: { SetAuth: (bool: boolean) => {} };
 
-        <div className="App">
+    componentDidMount() {
+        LoginService.checkAuth()
+            .then(() => this.props.SetAuth(true))
+            .catch(() => this.props.SetAuth(false));
+    }
 
-            <header className="App-header">
-                <h1 className="App-title">TB Admin App</h1>
-            </header>
-            <Switch>
-                <Route exact={true} path="/" component={WorldsHomePage}/>
-                <Route exact={true} path="/world/:worldId" component={World}/>
-                <Route path="/:worldId/:layerId" component={Layer}/>
-            </Switch>
+    public render() {
+        return (
+            <div>
+                <Navbar/>
+                <div className="App">
+                    <Switch>
+                        <Route path="/login" component={Login}/>
+                        <PrivateRoute exact={true} path="/" component={WorldsHomePage}/>
+                    </Switch>
+                </div>
+            </div>
+        );
+    }
+}
 
-        </div>
-);
+const mapDispatchToProps: any = (dispatch: any) => bindActionCreators({ SetAuth }, dispatch);
 
-export default App;
-
+export default withRouter(connect(null, mapDispatchToProps)(App) as any);

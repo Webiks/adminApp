@@ -13,10 +13,9 @@ class Worlds extends React.Component {
 
     // GET: get all worlds on startUp
     componentDidMount() {
-        console.log("app props: " + JSON.stringify(this.props));
         WorldService.getWorlds()
             .then((worlds: IWorld[]) => {
-                console.log("world list: " + JSON.stringify(worlds));
+                console.log('world list: ' + JSON.stringify(worlds));
                 return this.props.setWorlds(worlds || []);
             })
             .catch(error => this.props.setWorlds([]));
@@ -24,19 +23,19 @@ class Worlds extends React.Component {
     };
 
     render() {
-        return  <div className="worlds"> {
-                    this.props.worldsList.map(({ name }: IWorld) => <WorldNav key={name} worldName={name}/>)
-                }
-                </div>
+        return <div>
+            <div className="worlds"> {
+                this.props.worldsList.map(({ name }: IWorld) => <WorldNav key={name} worldName={name}/>)
+            }
+            </div>
+        </div>
+
     }
 }
 
-const mapStateToProps = (state: IState) => {
-    console.log("Worlds state: " + JSON.stringify(state));
-    return {
-        worldsList: state.worlds.list
-    };
-};
+const mapStateToProps = (state: IState) => ({
+    worldsList: state.worlds.list
+});
 
 const mapDispatchToProps = (dispatch: any) => ({
     setWorlds: (payload: IWorld[]) => dispatch(WorldsActions.setWorldsAction(payload))
