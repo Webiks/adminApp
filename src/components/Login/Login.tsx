@@ -97,7 +97,7 @@ class Login extends React.Component {
 }
 
 const mapStateToProps = (state: IState, props: any): any => ({
-    ...props,
+    location: state.router.location,
     isAuthenticated: state.login.isAuthenticated
 });
 
