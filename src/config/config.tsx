@@ -6,6 +6,6 @@ const config = {
     authorization: "Basic YWRtaW46Z2Vvc2VydmVy",
     geoserverUserName: 'sdf09rt2s',
     maxFileSize: 20000 * 1024 * 1024,
-}
+};
 
 export default config;

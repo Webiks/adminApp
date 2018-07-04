@@ -24,12 +24,16 @@ import { Dialog } from 'primereact/components/dialog/Dialog';
 
 export interface IPropsLayers {
     worldName: string,
+    layers: IWorldLayer[],
     world: IWorld,
+    setStateWorld: () => void,
+    getAllLayersData: () => void,
     updateWorld: (worlds: IWorld) => ITBAction,
     navigateTo: (layerName: string) => void
 }
 
 export interface IStateTable {
+    layers: IWorldLayer[],
     selectedLayer: any,
     displayDialog: boolean
 }
@@ -39,9 +43,17 @@ class LayersDataTable extends React.Component {
     props: IPropsLayers;
 
     state: IStateTable = {
+        layers: this.props.layers,
         selectedLayer: null,
         displayDialog: false
     };
+
+    // set state to initial state
+    setInitialState = () =>
+        this.setState({
+            selectedLayer: null,
+            displayDialog: false
+    });
 
     displayLayer = (layer: IWorldLayer) => {
         const center = layer.data.center;
@@ -49,7 +61,7 @@ class LayersDataTable extends React.Component {
         const projection = layer.data.latLonBoundingBox.crs;
         const olProjection = 'EPSG:3857';
         let map;
-        const zoom = layer.inputData.zoom === 0 ? 14 : layer.inputData.zoom;
+        const zoom = layer.inputData.zoom;
 
         // get the Capabilities XML file in JSON format
         // 1. get the Capabilities XML file
@@ -101,29 +113,23 @@ class LayersDataTable extends React.Component {
         if (confirmation){
             LayerService.deleteLayerById(this.props.worldName, layer)
                 .then(response => {
-                    console.log("LAYER DATA TABLE: delete layer - getAllLayersData...");
-                    // get the new layers' list
-                    LayerService.getAllLayersData(this.props.worldName)
-                        .then(layers => this.refresh(layers || []))
-                        .catch(error => this.refresh([]));
+                    console.log("LAYER DATA TABLE: delete layer...");
+                    // update the layers' list
+                    const layers = this.props.world.layers.filter( worldLayer => worldLayer.layer.name !== layer.name);
+                    this.refresh(layers);
                 })
                 .catch(error => this.refresh([]));
         }
     };
 
-    // set state to initial state
-    setInitState = () =>
-        this.setState({
-                selectedLayer: null,
-                displayDialog: false
-        });
-
     // update the App store and refresh the page
     refresh = (layers: IWorldLayer[]) => {
+        this.setState({ layers });
         console.log("Layer Data Table: updateLayers...");
         const name = this.props.worldName;
         this.props.updateWorld({ name, layers });
-        this.setInitState();
+        this.props.setStateWorld();
+        this.setInitialState();
     };
 
     actionsButtons = (rowData: any, column: any) => {
@@ -151,10 +157,12 @@ class LayersDataTable extends React.Component {
     render(){
         return  (
             <div className="content-section implementation">
-                <DataTable  value={this.props.world.layers} paginator={true} rows={10} responsive={false}
+                { this.props.layers && <div>
+                <DataTable  value={this.props.layers} paginator={true} rows={10} responsive={false}
                             resizableColumns={true} autoLayout={true} style={{margin:'10px 20px'}}
-                            header={<Header worldName={this.props.worldName} tableType={`layers`}/>}
-                            footer={<Footer worldName={this.props.worldName} />}
+                            header={<Header worldName={this.props.worldName} tableType={`layers`}
+                                            getAllLayersData={this.props.getAllLayersData} />}
+                            footer={<Footer worldName={this.props.worldName} getAllLayersData={this.props.getAllLayersData}/>}
                             selectionMode="single" selection={this.state.selectedLayer}
                             onSelectionChange={(e: any)=>{this.setState({selectedLayer: e.data});}}>
                         <Column field="layer.name" header="Name" sortable={true} style={{textAlign:'left', padding:'7px 20px'}}/>
@@ -166,6 +174,7 @@ class LayersDataTable extends React.Component {
                         <Column field="inputData.affiliation" header="File Affiliation" sortable={true} style={{width: '10%'}}/>
                         <Column header="Actions" body={this.actionsButtons} style={{width: '12%'}}/>
                 </DataTable>
+                </div>}
 
                 {this.state.selectedLayer && <div>
                     <Dialog visible={this.state.displayDialog} modal={true}
@@ -182,10 +191,10 @@ class LayersDataTable extends React.Component {
     }
 }
 
-const mapStateToProps = (state: IState, { worldName }: any) => {
+const mapStateToProps = (state: IState, { worldName, ...props }: any) => {
     return {
         world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name),
-        worldName
+        worldName, ...props
     }
 };
 

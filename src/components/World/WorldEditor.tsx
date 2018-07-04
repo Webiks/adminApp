@@ -22,6 +22,7 @@ export interface IPropsWorld {
     worldsList: IWorld[],
     worldName: string,
     world: IWorld,
+    refresh: (worlds: IWorld[]) => void,
     setDisplayDialog: (value: boolean) => void,
     setWorlds: (worlds: IWorld[]) => ITBAction
     updateWorld: (worlds: Partial<IWorld>) => ITBAction,
@@ -82,19 +83,31 @@ class WorldEditor extends React.Component {
                 .then (res => {
                     // WorldService.getWorlds();
                     worlds.push(this.state.world);
+                    this.refresh(worlds);
                 });
         } else {
             worlds[this.findSelectedWorldIndex()] = this.state.world;
+
+            // if the name was changed - update the workspace in geoserver
+            if (this.props.worldName !== this.state.world.name){
+                console.warn("SAVE: prev Name: " + this.props.worldName);
+                WorldService.updateWorld(this.props.worldName, this.state.world.name)
+                    .then ( res =>  {
+                        console.warn('Succeed to update worlds: ' + JSON.stringify(res));
+                        this.refresh(worlds);
+                    })
+                    .catch( error => console.warn('Failed to update worlds: ' + JSON.stringify(error.message)));
+            } else {
+                this.refresh(worlds);
+            }
         }
-        console.warn('save: update worlds' + JSON.stringify(worlds));
-        this.refresh(worlds);
     };
 
     // update the App store World's list and refresh the page
     refresh = (worlds: IWorld[]) => {
-        console.log('World Details: refresh the world list...');
-        this.props.setWorlds(worlds);
+        console.warn("World Editor REFRESH...");
         this.props.setDisplayDialog(false);
+        this.props.refresh(worlds);
     };
 
     render() {

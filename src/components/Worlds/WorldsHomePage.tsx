@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-import { IWorld } from "../../interfaces/IWorld";
-import { IState } from "../../store";
 import { connect } from "react-redux";
+import { IState } from "../../store";
+import { ITBAction } from '../../consts/action-types';
+import { IWorld } from "../../interfaces/IWorld";
 import { WorldsActions } from '../../actions/world.actions';
 import WorldsDataTable from './WorldsDataTable';
-import { IPropsWorlds } from '../../interfaces/IPropsWorlds';
 import { WorldService } from '../../services/WorldService';
 
 /* Prime React components */
@@ -13,6 +13,11 @@ import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
+
+export interface IPropsWorlds {
+    worldsList: IWorld[],
+    setWorlds: (worlds: IWorld[]) => ITBAction
+}
 
 export interface IStateWorlds {
     worlds: any

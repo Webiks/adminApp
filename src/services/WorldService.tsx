@@ -19,8 +19,7 @@ export class WorldService {
             .then(data => data.map((world: any) => {
                 console.log("worldService: world name: " + world.name);
                 return {
-                    name: world.name,
-                    // layers: [],
+                    name: world.name
                 }
             }))
     }
@@ -31,8 +30,7 @@ export class WorldService {
             .then(res => {
                 console.log("worldService: world name: " + res.data.workspace.name);
                 return {
-                    name: res.data.workspace.name,
-                    // layers: [],
+                    name: res.data.workspace.name
                 }
             })
             .catch(() => undefined);
@@ -43,14 +41,31 @@ export class WorldService {
     // ====================
     // get all layers of the world (including the ILayer's fields)
     static createWorld(name: string): Promise<any> {
-        console.log("start the Create Worlds service..." + this.baseUrl);
+        console.log("start the CREATE WORLD service..." + this.baseUrl);
         return axios
-            .get(`${this.baseUrl}/${name}/new`)
+            .post(`${this.baseUrl}/${name}`)
             .then(res => {
                 console.log("WORLD SERVICE: SUCCEED to create new World: " + name);
                 return res;
             })
             .catch(error => console.error("WORLD SERVICE: FAILED to create new World: " + error));
+    }
+
+    // =======================
+    //  UPDATE a World's name
+    // =======================
+    // get all layers of the world (including the ILayer's fields)
+    static updateWorld(name: string, newName: string): Promise<any> {
+        console.log("start the UPDATE WORLD service..." + this.baseUrl);
+        const data = { name : newName };
+        console.warn("UPDATE WORLD data: " + JSON.stringify(data));
+        return axios
+            .put(`${this.baseUrl}/${name}`, data)
+            .then(res => {
+                console.log("WORLD SERVICE: SUCCEED to update World with the name: " + name);
+                return res;
+            })
+            .catch(error => console.error("WORLD SERVICE: FAILED to update the World: " + error));
     }
 
     // ==============
@@ -60,9 +75,8 @@ export class WorldService {
     // delete world(workspace) from geoserver
     static deleteWorldByName(name: string): Promise<any> {
         console.log("start the DELETE WORLD service for layer: " + name);
-
         return axios
-            .get(`${this.baseUrl}/${name}/delete`)
+            .delete(`${this.baseUrl}/${name}`)
             .then(res => {
                 console.log("WORLD SERVICE: SUCCEED to delete World: " + name);
                 return res;

@@ -17,9 +17,11 @@ export class LayerService {
             // A. get an Array of all the world's layers
         return this.getWorldLayers(worldName)
             // B. get all the data of each layer:
-            .then(data =>
-                Promise.all(data.map((worldLayer: any) => this.getLayerByName(worldName, worldLayer.name)))
-            )
+            .then(data => {
+                // get the data of each layer in the world
+                const promises = data.map((worldLayer: any) => this.getLayerByName(worldName, worldLayer.name));
+                return Promise.all(promises);
+            })
             .catch(error => {
                 console.error("getAllLayersData ERROR!" + error.message);
                 throw new Error(error)
@@ -28,8 +30,7 @@ export class LayerService {
 
     // A. get all layers of the world (including the ILayer's fields)
     static getWorldLayers(worldName: string): Promise<any> {
-        console.log("start the GET LAYERS service...");
-        console.log("parameters: world name = " + worldName);
+        console.warn("start the GET LAYERS service...");
         return axios
             .get(`${this.baseUrl}/${worldName}`)
             .then(layers => {
@@ -64,7 +65,7 @@ export class LayerService {
 
     // 1. get the layer type & resource info
     static getLayerInfo(worldName: string, layerName: string): Promise<any> {
-        console.log("start the GET LAYER INFO service..." + JSON.stringify(`${this.baseUrl}${worldName}/${layerName}`));
+        console.log("start the GET LAYER INFO service..." + JSON.stringify(`${this.baseUrl}/layer/${worldName}/${layerName}`));
         return axios
             .get(`${this.baseUrl}/layer/${worldName}/${layerName}`)
             .then(layerInfo => {
@@ -80,7 +81,7 @@ export class LayerService {
 
     // 2. get layer's details ("data" field - type IRaster or IVector)
     static getLayerDetails(worldName: string, layer: IWorldLayer): Promise<any> {
-        console.log("start the GET LAYER DETAILS service..." + JSON.stringify(`${this.baseUrl}${worldName}/${layer.layer.name}/details`));
+        console.log("start the GET LAYER DETAILS service..." + JSON.stringify(`${this.baseUrl}/details/${worldName}/${layer.layer.name}`));
         return axios
             .get(`${this.baseUrl}/details/${worldName}/${layer.layer.name}`)
             .then(layerDetails => {
@@ -112,7 +113,7 @@ export class LayerService {
 
     // 3. get the layer's store data (for the format) according to the layer's type and the layer title (in the layer's details)
     static getStoreData(worldName: string, layer: IWorldLayer): Promise<any> {
-        console.log("start the GET STORE DATA service..." + JSON.stringify(`${this.baseUrl}${worldName}/${layer.layer.storeName}/${layer.layer.type}`));
+        console.log("start the GET STORE DATA service..." + JSON.stringify(`${this.baseUrl}/store/${worldName}/${layer.layer.storeName}/${layer.layer.type}`));
         return axios
             .get(`${this.baseUrl}/store/${worldName}/${layer.layer.storeName}/${layer.layer.type}`)
             .then(store => {

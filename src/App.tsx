@@ -15,7 +15,7 @@ const App = () => (
             </header>
             <Switch>
                 <Route exact={true} path="/" component={WorldsHomePage}/>
-                <Route exact={true} path="/:worldId" component={World}/>
+                <Route exact={true} path="/world/:worldId" component={World}/>
                 <Route path="/:worldId/:layerId" component={Layer}/>
             </Switch>
 

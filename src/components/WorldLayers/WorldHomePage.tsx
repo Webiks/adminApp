@@ -1,11 +1,12 @@
 import * as React from 'react';
 
-import { LayerService } from "../../services/LayerService";
+import { connect } from "react-redux";
+import { IState } from "../../store";
 import { IWorld } from "../../interfaces/IWorld";
 import { IWorldLayer } from "../../interfaces/IWorldLayer";
-import { IState } from "../../store";
 import { IPropsLayers } from '../../interfaces/IPropsLayers';
-import { connect } from "react-redux";
+import { ITBAction } from '../../consts/action-types';
+import { LayerService } from "../../services/LayerService";
 import { WorldsActions } from '../../actions/world.actions';
 import LayersDataTable from './LayersDataTable';
 import { AFFILIATION_TYPES } from '../../consts/layer-types';
@@ -16,13 +17,23 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
 
+export interface IStateWorld {
+    layers: IWorldLayer[]
+}
+
 class WorldHomePage extends React.Component {
     props: IPropsLayers;
 
+    state: IStateWorld = { layers: this.props.world.layers };
+
     // GET: get the world's layers on startUp
     componentWillMount() {
+        this.setStateWorld();
         this.getAllLayersData();
     };
+
+    // set state to initial state
+    setStateWorld = () => this.setState({ layers: this.props.world.layers } );
 
     getAllLayersData = (): void  => {
         console.log("World Home Page: getAllLayersData...");
@@ -31,13 +42,19 @@ class WorldHomePage extends React.Component {
                 // get the input Data for all the world's layers (from the App store)
                 let layersInput;
                 console.warn("getAllLayersData props layer: " + JSON.stringify(this.props.world.layers));
-                if (this.props.world.layers.length > 0){
-                    layersInput = this.props.world.layers.map( (layer: IWorldLayer) => this.getInputData(layer));
+                if (!layers) {
+                    console.warn("can't find any layer in that world");
+                    this.refresh([]);                              // return an empty array of the layers
+
                 } else {
-                    layersInput = layers.map( (layer: IWorldLayer) => this.getInputData(layer));
+                    if (this.state.layers && (this.state.layers.length > 0)){
+                        layersInput = this.state.layers.map( (layer: IWorldLayer) => this.getInputData(layer));
+                    } else {
+                        layersInput = layers.map( (layer: IWorldLayer) => this.getInputData(layer));
+                    }
                     console.warn("World Home Page layersInput: " + layersInput);
+                    this.refresh([...layersInput]);               // update the App store
                 }
-                this.refresh([...layersInput]);               // update the App store
             })
             .catch(error => this.refresh([]));
     };
@@ -56,7 +73,7 @@ class WorldHomePage extends React.Component {
                 },
                 flightAltitude: 0,
                 cloudCoveragePercentage: 0,
-                zoom: 0
+                zoom: 14
             };
         layer.inputData = inputData;
         console.warn("getAllLayersData after inputData: " + JSON.stringify(inputData));
@@ -68,13 +85,17 @@ class WorldHomePage extends React.Component {
         console.log("World Home Page: REFRESH...");
         const name = this.props.worldName;
         this.props.updateWorld({ name, layers });
+        this.setStateWorld();
     };
 
     render() {
         return (
             <div>
-                {this.props.world.layers && <div>
-                    <LayersDataTable worldName={ this.props.world.name }/>
+                {this.state.layers && <div>
+                    <LayersDataTable worldName={ this.props.world.name }
+                                     layers={ this.state.layers }
+                                     getAllLayersData={this.getAllLayersData}
+                                     setStateWorld={this.setStateWorld}/>
                 </div>}
             </div>
 

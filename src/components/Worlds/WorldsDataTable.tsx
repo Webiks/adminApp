@@ -20,6 +20,7 @@ import { Button } from 'primereact/components/button/Button';
 
 export interface IPropsWorldsTable {
     worldsList: IWorld[],
+    getWorldsList: () => void;
     setWorlds: (worlds: IWorld[]) => ITBAction
     navigateTo: (layerName: string) => void
 }
@@ -36,7 +37,16 @@ class WorldsDataTable extends React.Component {
         selectedWorld: null,
         displayDialog: false
     };
-    displayDialog: boolean = false;
+
+    // set state to initial state
+    setInitState = () => {
+        this.setState({
+            selectedWorld: null,
+            displayDialog: false
+        });
+    };
+
+    setDisplayDialog = (value) => this.setState({ displayDialog: value });
 
     goToSelectedWorld = (e) => {
         this.setState({ selectedWorld: e.data,
@@ -45,11 +55,10 @@ class WorldsDataTable extends React.Component {
     };
 
     editWorld = (rowData) => {
-        // this.displayDialog = true;
         this.setState({
             selectedWorld: {...rowData},
             displayDialog: true });
-        console.log("edit world: " + this.displayDialog);
+        console.log("edit world...");
     };
 
     deleteWorld = (rowData) => {
@@ -59,26 +68,23 @@ class WorldsDataTable extends React.Component {
             console.warn("deleteWorld index: " + index);
             WorldService.deleteWorldByName(rowData.name)
                 .then(res => {
-                    const worlds = this.props.worldsList.filter( layer => layer.name !== rowData.name);
+                    const worlds = this.props.worldsList.filter( world => world.name !== rowData.name);
                     this.refresh(worlds);
-                    /*WorldService.getWorlds().then(worlds => {
-                        this.refresh(worlds);
-                    });*/
                 });
         }
     };
 
-    findSelectedWorldIndex = (rowData) => {
-        return this.props.worldsList.indexOf(rowData);
+    addNew = () => {
+        this.setState({
+            selectedWorld: {
+                name: 'new'
+            },
+            displayDialog: true
+        });
     };
 
-    // set state to initial state
-    setInitState = () => {
-        this.displayDialog = false;
-        this.setState({
-            selectedWorld: null,
-            displayDialog: false
-        });
+    findSelectedWorldIndex = (rowData) => {
+        return this.props.worldsList.indexOf(rowData);
     };
 
     // update the state world's list
@@ -91,22 +97,9 @@ class WorldsDataTable extends React.Component {
 
     // update the App store and refresh the page
     refresh = (worlds) => {
-        this.setInitState();
         this.props.setWorlds([...worlds]);
+        this.setInitState();
         console.log("Worlds Home Page: REFRESH..." + JSON.stringify([...worlds]));
-    };
-
-    addNew = () => {
-        this.setState({
-            selectedWorld: {
-                name: 'new'
-            },
-            displayDialog: true
-        });
-    };
-
-    setDisplayDialog = (value) => {
-        this.setState({ displayDialog: value });
     };
 
     actionsButtons = (rowData: any, column: any) => {
@@ -148,7 +141,10 @@ class WorldsDataTable extends React.Component {
 
                     {this.state.selectedWorld && this.state.displayDialog && <div>
                         <div className="ui-grid ui-grid-responsive ui-fluid" >
-                            <WorldEditor worldName={ this.state.selectedWorld.name } setDisplayDialog={this.setDisplayDialog} displayDialog={true}/>
+                            <WorldEditor worldName={ this.state.selectedWorld.name }
+                                         setDisplayDialog={this.setDisplayDialog}
+                                         displayDialog={true}
+                                         refresh={this.refresh}/>
                         </div>
                     </div>}
 
