@@ -1,42 +1,32 @@
 import * as React from 'react';
-
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import WorldHomePage from '../WorldLayers/WorldLayers';
+import WorldLayers from '../WorldLayers/WorldLayers';
 import { IState } from '../../store';
 import { IWorld } from '../../interfaces/IWorld';
 import { bindActionCreators } from 'redux';
+import Title from '../Title/Title';
+import { withRouter } from 'react-router-dom';
 
 export interface IWorldComponentProps {
     world: IWorld;
     worldName: string;
-    push: (path: string) => {}
 }
 
 // check if the world exist in the GeoServer Workspaces and navigate to its home page
-const World = ({ worldName, world, push }: IWorldComponentProps | any) => (
+const World = ({ world, match, worldName }) => (
     <div>
-        <h1>
-            {
-                world ? `${worldName} World` :
-                    <div>
-                        <span style={{ color: 'gold' }}> ⚠ </span>
-                        <span>World {worldName} doesn't exist!</span>
-                    </div>
-            }
-        </h1>
-        <div>
-            { world && <WorldHomePage worldName={worldName}/> }
-        </div>
-        <button onClick={() => push('/')}>Back to worlds</button>
+        <Title title={`${worldName} world`} isExist={Boolean(world)}/>
+        {world && <div><WorldLayers worldName={worldName} match={match}/></div>}
     </div>
 );
 
 const mapStateToProps = (state: IState, { match }: any) => ({
-        world: state.worlds.list.find(({ name, layers }: IWorld) => match.params.worldName === name),
-        worldName: match.params.worldName
+    match,
+    world: state.worlds.list.find(({ name, layers }: IWorld) => match.params.worldName === name),
+    worldName: match.params.worldName
 });
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({ push }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(World);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(World));

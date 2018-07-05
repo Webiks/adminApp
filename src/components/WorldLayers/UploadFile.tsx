@@ -36,7 +36,7 @@ class UploadFile extends React.Component {
     onUpload = (e: any) => {
         console.log("On Upload...");
         // update the layers' list
-        this.props.getAllLayersData();
+        // this.props.getAllLayersData();
     };
 
     updateLayers = (layers: IWorldLayer[]) => {

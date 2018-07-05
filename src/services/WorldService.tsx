@@ -17,7 +17,6 @@ export class WorldService {
             .get(this.baseUrl)
             .then(res => res.data.workspaces.workspace)
             .then(data => data.map((world: any) => {
-                console.log("worldService: world name: " + world.name);
                 return {
                     name: world.name
                 }

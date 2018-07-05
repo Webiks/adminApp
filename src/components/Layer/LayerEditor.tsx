@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { IWorld } from '../../interfaces/IWorld';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
 import { IState } from '../../store';
 import { ITBAction } from '../../consts/action-types';
 import { IWorldLayer } from '../../interfaces/IWorldLayer';
@@ -10,7 +9,6 @@ import { AFFILIATION_TYPES } from '../../consts/layer-types';
 import Header from '../DataTable/Header';
 import { cloneDeep, get } from 'lodash';
 import LayerPropertiesList from './LayerPropertiesList';
-
 /* Prime React components */
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -55,36 +53,36 @@ class LayerEditor extends React.Component {
     };
 
     onEditorValueChange = (props, value) => {
-        console.log("onEditorValueChange props: " + JSON.stringify(props));
+        console.log('onEditorValueChange props: ' + JSON.stringify(props));
         const split = props.path.split('.');
         const field = split[1];
         let property = split[2];
 
-        switch(field){
+        switch (field) {
             case ('layer'):
-                const layer = {...this.state.worldLayer};
+                const layer = { ...this.state.worldLayer };
                 layer.layer[property] = value;
-                this.setState({worldLayer : { ...layer}} );
+                this.setState({ worldLayer: { ...layer } });
             case ('inputData'):
-                const inputData = {...this.state.worldLayer};
-                if (property === 'sensor'){
+                const inputData = { ...this.state.worldLayer };
+                if (property === 'sensor') {
                     property = split[3];
                     const index = props.path.indexOf('[');
-                    if (index > -1){
-                        const bandsIndex = parseInt(props.path.substr(index + 1, 1),10);
+                    if (index > -1) {
+                        const bandsIndex = parseInt(props.path.substr(index + 1, 1), 10);
                         inputData.inputData.sensor.bands[bandsIndex] = (value);
-                    } else{
+                    } else {
                         inputData.inputData.sensor[property] = value;
                     }
-                } else{
+                } else {
                     inputData.inputData[property] = value;
                 }
-                this.setState({worldLayer : {...inputData}} );
+                this.setState({ worldLayer: { ...inputData } });
         }
     };
 
     inputTextEditor(props) {
-        switch(props.rowData.type){
+        switch (props.rowData.type) {
             case ('text'):
                 return <InputText type="text" value={get(this.state, props.rowData.path)}
                                   onChange={(e: any) => this.onEditorValueChange(props.rowData, e.target.value)}/>;
@@ -94,7 +92,7 @@ class LayerEditor extends React.Component {
                                   onChange={(e: any) => this.onEditorValueChange(props.rowData, e.target.value)}/>;
             case ('dropdown'):
                 return <Dropdown id="affiliation" options={this.layerAffiliationTypes}
-                                 value={this.state.worldLayer.inputData.affiliation ? this.state.worldLayer.inputData.affiliation : AFFILIATION_TYPES.AFFILIATION_UNKNOWN }
+                                 value={this.state.worldLayer.inputData.affiliation ? this.state.worldLayer.inputData.affiliation : AFFILIATION_TYPES.AFFILIATION_UNKNOWN}
                                  onChange={(e: any) => this.onEditorValueChange(props.rowData, e.value)}/>;
             default:
                 return <InputText type="text" value={get(this.state, props.rowData.path)}
@@ -106,22 +104,24 @@ class LayerEditor extends React.Component {
         if (rowData.path === 'worldLayer.data.center') {
             const value0 = (this.state.worldLayer.data.center[0]).toFixed(2);
             const value1 = (this.state.worldLayer.data.center[1]).toFixed(2);
-            return value0 + ", " + value1;
+            return value0 + ', ' + value1;
         }
-        else{
+        else {
             return get(this.state, rowData.path)
         }
     };
 
     edit = (props) => {
-        if (!props.rowData.readonly){
+        if (!props.rowData.readonly) {
             return this.inputTextEditor(props);
         } else {
             return this.getFieldValue(props.rowData);
         }
     };
 
-    backToWorldPage = () => window.history.back();
+    backToWorldPage = () => {
+        window.history.back();
+    };
 
     // save the changes in the App store
     save = () => {
@@ -146,33 +146,37 @@ class LayerEditor extends React.Component {
             <div className="ui-dialog-buttonpane ui-helper-clearfix">
                 <Button label="Save" icon="fa fa-check" onClick={this.save}/>
                 <Button label="Reset" icon="fa fa-undo" onClick={this.componentWillMount.bind(this)}/>
-                <Button label="Cancel" icon="fa fa-close"  onClick={this.backToWorldPage}/>
+                <Button label="Cancel" icon="fa fa-close" onClick={this.backToWorldPage}/>
             </div>;
 
         return (
             <div>
-                {this.state.worldLayer && <div className="content-section implementation"
-                                               style={{ textAlign: 'left', width: '70%', margin: 'auto' }}>
-                    <DataTable value={LayerPropertiesList} paginator={true} rows={10} responsive={false}
-                               header={<Header worldName={this.state.worldName} tableType={`editor`}/>}
-                               globalFilter={this.state.globalFilter}
-                               footer={editorFooter} style={{ margin: '10px 20px' }}>
-                        <Column field="label" header="Property" sortable={true}
-                                style={{ padding: '5px 20px', width: '35%' }}/>
-                        <Column field="path" header="Value" sortable={false} style={{ padding: '5px 20px' }}
-                                editor={this.edit}
-                                body={(rowData) => this.getFieldValue(rowData)}/>
-                    </DataTable>
-                </div>}
+                {
+                    this.state.worldLayer && <div className="content-section implementation"
+                                                  style={{ textAlign: 'left', width: '70%', margin: 'auto' }}>
+                        <DataTable value={LayerPropertiesList} paginator={true} rows={10} responsive={false}
+                                   header={<Header worldName={this.state.worldName} tableType={`editor`}/>}
+                                   globalFilter={this.state.globalFilter}
+                                   footer={editorFooter} style={{ margin: '10px 20px' }}>
+                            <Column field="label" header="Property" sortable={true}
+                                    style={{ padding: '5px 20px', width: '35%' }}/>
+                            <Column field="path" header="Value" sortable={false} style={{ padding: '5px 20px' }}
+                                    editor={this.edit}
+                                    body={(rowData) => this.getFieldValue(rowData)}/>
+                        </DataTable>
+                    </div>
+                }
             </div>
         )
     }
 
 }
 
-const mapStateToProps = (state: IState, { worldName, layer }: any) =>
-    ({ worldName, layer,
-       world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name) });
+const mapStateToProps = (state: IState, { worldName, layer }: any) => ({
+    worldName,
+    layer,
+    world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name)
+});
 
 const mapDispatchToProps = (dispatch: any) => bindActionCreators({ updateWorld: WorldsActions.updateWorldAction }, dispatch);
 

@@ -114,10 +114,6 @@ class WorldsDataTable extends React.Component {
     };
 
     render(){
-
-        console.log("World Data Table (render): selected world :" + JSON.stringify(this.state.selectedWorld));
-        console.log("World Data Table: RENDER Data Table" + JSON.stringify(this.props.worldsList));
-
         const footer = <div className="ui-helper-clearfix" style={{width:'100%'}}>
             <Button icon="fa fa-plus" label="Add" onClick={this.addNew} style={{margin:'auto'}}/>
         </div>;

@@ -26,7 +26,7 @@ export interface IPropsLayers {
     worldName: string,
     layers: IWorldLayer[],
     world: IWorld,
-    setStateWorld: () => void,
+    // setStateWorld: () => void,
     getAllLayersData: () => void,
     updateWorld: (worlds: IWorld) => ITBAction,
     navigateTo: (layerName: string) => void
@@ -128,7 +128,7 @@ class LayersDataTable extends React.Component {
         console.log("Layer Data Table: updateLayers...");
         const name = this.props.worldName;
         this.props.updateWorld({ name, layers });
-        this.props.setStateWorld();
+        // this.props.setStateWorld();
         this.setInitialState();
     };
 

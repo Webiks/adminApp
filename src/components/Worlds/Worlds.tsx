@@ -55,7 +55,6 @@ class Worlds extends React.Component {
 
             <div>
                 <Route path="/world/:worldName" component={World}/>
-                { console.warn("RENDER: match: " + JSON.stringify(this.props.match)) }
                 {
                     this.props.match.isExact
                         ? this.props.worldsList &&
