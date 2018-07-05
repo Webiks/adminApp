@@ -1,4 +1,12 @@
-import { ICrs, ILatLonBoundingBox, IMetaData, INameSpace, INativeBoundingBox, IStore, IStrings } from "./ILayerDetails";
+import {
+    ICrs,
+    ILatLonBoundingBox,
+    IMetaData,
+    INameSpace,
+    INativeBoundingBox,
+    ILayerStore,
+    IStrings
+} from './ILayerDetails';
 
 export interface IVector {
     name: string,
@@ -11,10 +19,11 @@ export interface IVector {
     srs: string,
     nativeBoundingBox: INativeBoundingBox,
     latLonBoundingBox: ILatLonBoundingBox,
+    center: [ number, number],
     projectionPolicy?: string,
     enabled?: boolean,
     metadata?: IMetaData,
-    store: IStore,
+    store: ILayerStore,
     maxFeatures: number,
     numDecimals: number,
     overridingServiceSRS: boolean,

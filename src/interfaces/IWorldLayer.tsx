@@ -1,24 +1,17 @@
-import { ILayerDetails } from "./ILayerDetails";
-import { IAttribution, IDefaultStyle, ILayer, IResource } from "./ILayer";
+import { ILayer } from "./ILayer";
+import { IStore } from './IStore';
+import { IImageData } from './IImageData';
+import { IInputdata } from './IInputData';
+import { IRaster } from './IRaster';
+import { IVector } from './IVector';
 
 export interface IWorldLayer {
     name: string,
-    layer: ILayer,
-    data: ILayerDetails
+    href?: string,
+    layer: ILayer,                  // layer data from geoserver
+    store: IStore                   // store store data from geoserver (coverStore or dataStore)
+    data:  IRaster | IVector            // raster or vector data from geoserver
+    imageData: IImageData           // data from the image file
+    inputData: IInputdata          // data from the user
 }
 
-export interface IDefaultStyle {
-    name: string,
-    href: string
-}
-
-export interface IResource {
-    class: string
-    name: string,
-    href: string
-}
-
-export interface IAttribution {
-    logoWidth: number,
-    logoHeight: number
-}

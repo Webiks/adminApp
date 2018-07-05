@@ -26,7 +26,7 @@ class App extends React.Component {
                 <div className="App">
                     <Switch>
                         <Route path="/login" component={Login}/>
-                        <PrivateRoute exact={true} path="/" component={Worlds}/>
+                        <PrivateRoute path="/" component={Worlds}/>
                     </Switch>
                 </div>
             </div>

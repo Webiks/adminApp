@@ -1,32 +1,32 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
-import WorldHomePage from "../WorldHomePage";
-import { IState } from "../../store";
+import WorldLayers from '../WorldLayers/WorldLayers';
+import { IState } from '../../store';
 import { IWorld } from '../../interfaces/IWorld';
-import { WorldsActions } from '../../actions/world.actions';
+import { bindActionCreators } from 'redux';
+import Title from '../Title/Title';
+import { withRouter } from 'react-router-dom';
 
-const World = ({ world, backToWorlds }: any) => (
+export interface IWorldComponentProps {
+    world: IWorld;
+    worldName: string;
+}
+
+// check if the world exist in the GeoServer Workspaces and navigate to its home page
+const World = ({ world, match, worldName }) => (
     <div>
-        <h1>
-            { world.name } world !
-        </h1>
-        <WorldHomePage worldName={ world.name }/>
-        <button onClick={backToWorlds}>Back to worlds</button>
+        <Title title={`${worldName} world`} isExist={Boolean(world)}/>
+        {world && <div><WorldLayers worldName={worldName} match={match}/></div>}
     </div>
 );
 
-const mapStateToProps = (state: IState, props: any) => ({
-    world: state.worlds.list.find(({ name }) => name === props.match.params.worldId )
+const mapStateToProps = (state: IState, { match }: any) => ({
+    match,
+    world: state.worlds.list.find(({ name, layers }: IWorld) => match.params.worldName === name),
+    worldName: match.params.worldName
 });
 
-const mapDispatchToProps = (dispatch: any) => ({
-    setWorlds: (payload: IWorld[]) => {
-        const action = WorldsActions.setWorldsAction(payload);
-        console.log(action);
-        return dispatch('action', action);
-    },
-    backToWorlds: () => dispatch(push('/'))
-});
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({ push }, dispatch);
 
-export default connect(mapStateToProps, mapDispatchToProps)(World);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(World));
