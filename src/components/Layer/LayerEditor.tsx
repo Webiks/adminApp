@@ -1,14 +1,17 @@
 import * as React from 'react';
-import { IWorld } from '../../interfaces/IWorld';
+
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 import { IState } from '../../store';
 import { ITBAction } from '../../consts/action-types';
+import { IWorld } from '../../interfaces/IWorld';
 import { IWorldLayer } from '../../interfaces/IWorldLayer';
 import { WorldsActions } from '../../actions/world.actions';
 import { AFFILIATION_TYPES } from '../../consts/layer-types';
-import Header from '../DataTable/Header';
+import DataTableHeader from '../DataTable/DataTableHeader';
 import { cloneDeep, get } from 'lodash';
 import LayerPropertiesList from './LayerPropertiesList';
+
 /* Prime React components */
 import 'primereact/resources/themes/omega/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -19,7 +22,6 @@ import { DataTable } from 'primereact/components/datatable/DataTable';
 import { Column } from 'primereact/components/column/Column';
 import { InputText } from 'primereact/components/inputtext/InputText';
 import { Dropdown } from 'primereact/components/dropdown/Dropdown';
-import { bindActionCreators } from 'redux';
 
 export interface IPropsLayer {
     worldName: string,
@@ -154,7 +156,7 @@ class LayerEditor extends React.Component {
                     this.state.worldLayer && <div className="content-section implementation"
                                                   style={{ textAlign: 'left', width: '70%', margin: 'auto' }}>
                         <DataTable value={LayerPropertiesList} paginator={true} rows={10} responsive={false}
-                                   header={<Header worldName={this.state.worldName} tableType={`editor`}/>}
+                                   header={<DataTableHeader title={`File Editor`}/>}
                                    globalFilter={this.state.globalFilter}
                                    footer={editorFooter} style={{ margin: '10px 20px' }}>
                             <Column field="label" header="Property" sortable={true}

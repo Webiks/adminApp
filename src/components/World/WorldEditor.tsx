@@ -58,7 +58,6 @@ class WorldEditor extends React.Component {
                 worldName: this.props.worldName,
                 worldsList: this.props.worldsList });
         }
-        console.warn("World EDITOR: componentWillMount: props world list: " + JSON.stringify(this.props.worldsList));
     }
 
     findSelectedWorldIndex() {
@@ -74,7 +73,6 @@ class WorldEditor extends React.Component {
 
     // save the changes in the App store
     save = () => {
-        console.log('SAVE: world list: ' + JSON.stringify(this.props.worldsList));
         const worlds = [...this.props.worldsList];
         if (this.newWorld){
             WorldService.createWorld(this.state.world.name)
@@ -93,7 +91,7 @@ class WorldEditor extends React.Component {
                         console.warn('Succeed to update worlds: ' + JSON.stringify(res));
                         this.refresh(worlds);
                     })
-                    .catch( error => console.warn('Failed to update worlds: ' + JSON.stringify(error.message)));
+                    .catch( error => console.error('Failed to update worlds: ' + JSON.stringify(error.message)));
             } else {
                 this.refresh(worlds);
             }
@@ -102,7 +100,6 @@ class WorldEditor extends React.Component {
 
     // update the App store World's list and refresh the page
     refresh = (worlds: IWorld[]) => {
-        console.warn("World Editor REFRESH...");
         this.props.setDisplayDialog(false);
         this.props.refresh(worlds);
     };

@@ -10,9 +10,4 @@ export enum AFFILIATION_TYPES {
     AFFILIATION_UNKNOWN = 'UNKNOWN'
 }
 
-/*
-export const rasterData: ILayerTypeData = {
-    storeType: 'coveragestores',
-    layerDetailsField: 'coverage'
-};*/
 

@@ -11,11 +11,12 @@ export interface ILayerComponentProps  {
     selectedLayer: IWorldLayer,
     world: IWorld;
     worldName: string,
-    layerName: string
+    layerName: string,
+    push: any
 }
 
 // check if the layer exist in the GeoServer Layers of this world and navigate to the layer editor page
-const Layer = ({ worldName, world, layerName, selectedLayer, push }: ILayerComponentProps | any) => (
+const Layer = ({ worldName, world, layerName, selectedLayer, push }: ILayerComponentProps) => (
     <div>
         <Title title={`${layerName} layer`} isExist={Boolean(selectedLayer)}/>
         <div>
@@ -28,7 +29,6 @@ const Layer = ({ worldName, world, layerName, selectedLayer, push }: ILayerCompo
 const mapStateToProps = (state: IState, { match }:any ) => {
     const world: IWorld = state.worlds.list.find(({ name, layers }: IWorld) => match.params.worldName === name);
     const selectedLayer: IWorldLayer = world.layers.find(({ layer }: IWorldLayer) => match.params.layerName === layer.name);
-    console.log("selectedLayer", selectedLayer);
     return {
         world,
         selectedLayer,

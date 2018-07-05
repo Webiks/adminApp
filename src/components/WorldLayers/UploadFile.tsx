@@ -66,7 +66,7 @@ class UploadFile extends React.Component {
 const mapStateToProps = (state: IState, { worldName, getAllLayersData }: any) => {
     return {
         world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name),
-        getAllLayersData
+        worldName, getAllLayersData
     }
 };
 

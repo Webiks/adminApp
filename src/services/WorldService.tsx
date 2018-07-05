@@ -12,7 +12,7 @@ export class WorldService {
     // ==============
     // get all layers of the world (including the ILayer's fields)
     static getWorlds(): Promise<any> {
-        console.log("start the getWorlds service..." + this.baseUrl);
+        console.warn("start the getWorlds service..." + this.baseUrl);
         return axios
             .get(this.baseUrl)
             .then(res => res.data.workspaces.workspace)
@@ -24,10 +24,10 @@ export class WorldService {
     }
 
     static getWorld(name: string): Promise<any> {
+        console.warn("start the getWorld service..." + `${this.baseUrl}/${name}`);
         return axios
             .get(`${this.baseUrl}/${name}`)
             .then(res => {
-                console.log("worldService: world name: " + res.data.workspace.name);
                 return {
                     name: res.data.workspace.name
                 }
@@ -40,7 +40,7 @@ export class WorldService {
     // ====================
     // get all layers of the world (including the ILayer's fields)
     static createWorld(name: string): Promise<any> {
-        console.log("start the CREATE WORLD service..." + this.baseUrl);
+        console.log("start the CREATE WORLD service..." + `${this.baseUrl}/${name}`);
         return axios
             .post(`${this.baseUrl}/${name}`)
             .then(res => {
@@ -55,7 +55,7 @@ export class WorldService {
     // =======================
     // get all layers of the world (including the ILayer's fields)
     static updateWorld(name: string, newName: string): Promise<any> {
-        console.log("start the UPDATE WORLD service..." + this.baseUrl);
+        console.log("start the UPDATE WORLD service..." + newName);
         const data = { name : newName };
         console.warn("UPDATE WORLD data: " + JSON.stringify(data));
         return axios
@@ -73,7 +73,7 @@ export class WorldService {
 
     // delete world(workspace) from geoserver
     static deleteWorldByName(name: string): Promise<any> {
-        console.log("start the DELETE WORLD service for layer: " + name);
+        console.warn("start the DELETE WORLD service for layer: " + name);
         return axios
             .delete(`${this.baseUrl}/${name}`)
             .then(res => {

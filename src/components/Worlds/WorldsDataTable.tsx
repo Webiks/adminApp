@@ -6,7 +6,7 @@ import { IState } from '../../store';
 import { WorldsActions } from '../../actions/world.actions';
 import { ITBAction } from '../../consts/action-types';
 import { WorldService } from '../../services/WorldService';
-import Header from '../DataTable/Header';
+import DataTableHeader from '../DataTable/DataTableHeader';
 import WorldEditor from '../World/WorldEditor';
 
 /* Prime React components */
@@ -123,7 +123,7 @@ class WorldsDataTable extends React.Component {
                 {this.props.worldsList && <div>
                     <DataTable  value={this.props.worldsList} paginator={true} rows={10} responsive={true}
                                 resizableColumns={true} autoLayout={true} style={{margin:'10px 20px'}}
-                                header={<Header worldName={'worlds'} tableType={'worlds'}/>}
+                                header={<DataTableHeader title={'Worlds List'}/>}
                                 footer={footer}
                                 selectionMode="single" selection={this.state.selectedWorld}
                                 onSelectionChange={(e: any)=> this.setState({selectedLayer: e.data})}
