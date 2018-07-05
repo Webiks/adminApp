@@ -135,7 +135,6 @@ class LayerEditor extends React.Component {
     // update the App store and refresh the page
     refresh = (layers: IWorldLayer[]) => {
         console.log('Layer Details: refresh...');
-        console.warn('affiliation: ' + this.state.worldLayer.inputData.affiliation);
         const name = this.props.worldName;
         this.props.updateWorld({ name, layers });
         console.warn('layer (from layers) inputData: ' + JSON.stringify(layers[this.findSelectedLayerIndex()].inputData));

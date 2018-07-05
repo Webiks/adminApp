@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { IWorld } from '../../interfaces/IWorld';
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
+import { bindActionCreators } from 'redux';
 import { IState } from '../../store';
 import { ITBAction } from '../../consts/action-types';
 import { WorldsActions } from '../../actions/world.actions';
+import { WorldService } from '../../services/WorldService';
 import { cloneDeep, get } from 'lodash';
 
 /* Prime React components */
@@ -14,7 +15,6 @@ import 'primeicons/primeicons.css';
 import 'font-awesome/css/font-awesome.css';
 import { Button } from 'primereact/components/button/Button';
 import { InputText } from 'primereact/components/inputtext/InputText';
-import { WorldService } from '../../services/WorldService';
 import { Dialog } from 'primereact/components/dialog/Dialog';
 
 export interface IPropsWorld {
@@ -24,9 +24,7 @@ export interface IPropsWorld {
     world: IWorld,
     refresh: (worlds: IWorld[]) => void,
     setDisplayDialog: (value: boolean) => void,
-    setWorlds: (worlds: IWorld[]) => ITBAction
-    updateWorld: (worlds: Partial<IWorld>) => ITBAction,
-    navigateTo: (layerName: string) => void
+    updateWorld: (worlds: Partial<IWorld>) => ITBAction
 }
 
 export interface IStateDetails {
@@ -81,7 +79,6 @@ class WorldEditor extends React.Component {
         if (this.newWorld){
             WorldService.createWorld(this.state.world.name)
                 .then (res => {
-                    // WorldService.getWorlds();
                     worlds.push(this.state.world);
                     this.refresh(worlds);
                 });
@@ -160,16 +157,12 @@ class WorldEditor extends React.Component {
 
 const mapStateToProps = (state: IState, { worldName, ...rest }: any) => {
     return {
-        ...rest,
+        ...rest, worldName,
         worldsList: state.worlds.list,
         world: state.worlds.list.find(({ name, layers }: IWorld) => worldName === name),
     }
 };
 
-const mapDispatchToProps = (dispatch : any) => ({
-    setWorlds: (payload: IWorld[]) => dispatch(WorldsActions.setWorldsAction(payload)),
-    updateWorld: (payload: IWorld) => dispatch(WorldsActions.updateWorldAction(payload)),
-    navigateTo:  (location: string) => dispatch(push(location))
-});
+const mapDispatchToProps = (dispatch: any) => bindActionCreators({ updateWorld: WorldsActions.updateWorldAction }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(WorldEditor);

@@ -33,14 +33,15 @@ class WorldLayers extends React.Component {
 
     // GET: get the world's layers on startUp
     componentWillMount() {
-        console.log("componentWillMount");
-        LayerService.getAllLayersData(this.props.world.name)
-            .then(layers => {
-                // get the input Data for all the world's layers (from the App store)
-                const layersInput = layers.map((layer: IWorldLayer) => this.getInputData(layer));
-                this.refresh([...layersInput]);               // update the App store
-            })
-            .catch(error => this.refresh([]));
+        if (!this.props.world.layers.length)  {
+            LayerService.getAllLayersData(this.props.world.name)
+                .then(layers => {
+                    // get the input Data for all the world's layers (from the App store)
+                    const layersInput = layers.map((layer: IWorldLayer) => this.getInputData(layer));
+                    this.refresh([...layersInput]);               // update the App store
+                })
+                .catch(error => this.refresh([]));
+        }
     };
 
     // get the input Data of the layer from the App store
